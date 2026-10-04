@@ -370,6 +370,16 @@ The homepage reads three columns and the permit guide reads four, both from thes
 - **Policies** are `WithDemo<PolicySection[]>`. `[CLIENT: ...]` placeholders with no demo value are omitted from the live variant rather than rendered.
 - **Emails** move to `content/emails.ts` in S8, with the enquiry flow.
 
+## Implementation notes (S6, 4 October 2026)
+
+- Destination and guide routes are statically generated from the existing read layer, with `dynamicParams = false` and `notFound()` for unknown content.
+- `lib/content/pages.ts` exposes the hub, index, about, FAQ, policy and interface copy; `lib/content/facts.ts` exposes the shared permit data. New destination headings and the dated guide eyebrow live in `content/pages/` and are exported from `lib/content/all.ts` for verbatim enforcement.
+- `GuideBlock` renders paragraphs, unordered/ordered lists, tables, stamps, `permitTable` and `monthEntry`. `PermitTable` supports both the guide's four columns and the S7 homepage's three columns, retaining the official currency of each fee.
+- `Guide.factStamp` is an optional closing stamp. The best-time guide uses the approved global stamp because it repeats permit prices without a stamp block (plan gap G17).
+- About content has `team.liveMembers`, initially empty, alongside the sample members. `pickVariant()` selects the real or sample list; the demo explicitly labels the sample entries. A client fills `liveMembers` and the live licence text in its content swap.
+- Policies use the existing `content/pages/policies.ts` model, with `pickVariant()` and the demo notice. No new policy wording was authored.
+- `/plan-your-trip` is an interim contact page so the sitemap and conversion links work in S6. Its approved heading, lede, WhatsApp contact/hours and `interimBody` variants are in content. S8 must replace it with the specified form and full side panel. The interim page omits claims about sending a form, database storage or confirmation emails.
+
 ## Consequences
 
 - Content edits need a developer and a deploy. That is acceptable until an operator needs self-service editing, which is the CMS trigger named in the brief.

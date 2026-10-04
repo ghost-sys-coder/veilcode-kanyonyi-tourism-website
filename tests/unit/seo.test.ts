@@ -5,7 +5,11 @@ import { parseDemoMode } from "@/config/demo";
 import { meta } from "@/content/meta";
 import { buildLlmsTxt } from "@/lib/seo/llms";
 import { pageMetadata } from "@/lib/seo/page-metadata";
-import { breadcrumbSchema, organizationSchema, serializeJsonLd, websiteSchema } from "@/lib/seo/schema";
+import { getDestinations } from "@/lib/content/destinations";
+import { getGuides } from "@/lib/content/guides";
+import { getTours } from "@/lib/content/tours";
+import { faqGroups } from "@/lib/content/pages";
+import { aboutPageSchema, articleSchema, breadcrumbSchema, faqPageSchema, organizationSchema, serializeJsonLd, touristDestinationSchema, touristTripSchema, websiteSchema } from "@/lib/seo/schema";
 
 describe("demo mode is fail-safe (002 section 2)", () => {
   it.each([
@@ -62,8 +66,13 @@ describe("structured data (002 section 9)", () => {
     return [];
   };
 
-  it("site-wide schema uses no type the brief forbids for a fictional operator", () => {
-    const all = [organizationSchema(), websiteSchema(), breadcrumbSchema([{ label: "Home", href: "/" }])];
+  it("every page's schema uses no type the brief forbids for a fictional operator", () => {
+    const all = [
+      organizationSchema(), websiteSchema(), breadcrumbSchema([{ label: "Home", href: "/" }]), aboutPageSchema(),
+      ...getTours().flatMap((tour) => [touristTripSchema(tour), faqPageSchema(tour.faqs)]),
+      ...getDestinations().flatMap((destination) => [touristDestinationSchema(destination), faqPageSchema(destination.faqs)]),
+      ...getGuides().map(articleSchema), faqPageSchema(faqGroups.flatMap((group) => group.items)),
+    ];
     expect(types(all).filter((t) => FORBIDDEN.includes(t))).toEqual([]);
   });
 

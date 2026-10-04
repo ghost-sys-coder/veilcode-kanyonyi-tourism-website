@@ -30,6 +30,9 @@ Per the brief, I'll use the nearest existing line and list each one here. Nothin
 | G12 | Operator notification in demo mode | The copy has one version only | Same email in both modes (it only goes to frank@) |
 | G13 | Home month picker legend | The copy's legend has three entries (Drier months, Green season, Short rains) but March's season is "Long rains begin" | March and October share the rains colour and the "Short rains" legend entry. Frank: add a legend label for March, or confirm |
 | G14 | Jinja tour card (shot 11) | The brief asks for a raft in white water; no free Unsplash photo of Nile rafting exists | A tour boat on the Nile at Jinja (the tour includes a source-of-the-Nile boat trip). Swap if Frank has a rafting photo |
+| G15 | FAQ and policy closing sections (S6) | No page-specific closing copy is provided, but 002 requires a next action | FAQ reuses the guides index's "Still have questions?" and WhatsApp action. Policies reuse about's "Ask us anything" body and "Plan my trip" |
+| G16 | Interim /plan-your-trip (S6) | The S6 sitemap criterion includes the S8 form route, but no temporary-page copy is supplied | Approved hero and contact/hours, plus the nearest existing demo/live reply line. Form-storage and confirmation-email promises are omitted until S8 replaces the interim page |
+| G17 | Best-time guide closing stamp (S6) | It repeats permit fees but has no dedicated stamp block | Uses the approved global fact stamp from 02-global.md through optional `Guide.factStamp` |
 
 ## Conflicts found, with proposed resolutions
 
@@ -88,11 +91,15 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 - `/tours` with `tour-filters` (chips, sort, `?experience`, `?length`, `?month`), the results line, the empty state, the price note, the 2027 callout and the ItemList JSON-LD
 - *Done when:* all six tour pages render on a 360px viewport, and the filters produce the copy's results line and empty state
 
-**S6. Destinations, guides, FAQ, about, policies (Phase 03)**
+**S6. Destinations, guides, FAQ, about, policies (Phase 03)**: done 4 October 2026, branch `s6-pages`
 - `/guides` index (06-guides.md), `/destinations` hub and `/destinations/[slug]` (TouristDestination, FAQPage, derived "Tours that visit")
 - `/guides/[slug]` (block renderer, jump links, Article JSON-LD, `permit-table` with its stamp)
 - `/faq` (Accordion, FAQPage, stamp), `/about`, `/booking-terms`, `/privacy` (with the demo policy notice)
 - *Done when:* every URL in the sitemap returns 200 locally, with one `<h1>` and a valid canonical
+- Verified: all 22 sitemap URLs return 200, have one H1 and a self canonical. Each new route passes axe WCAG 2.2 AA on mobile and desktop, plus no horizontal page scroll at 360px. Typecheck and lint pass; 203 Vitest tests and 104 Playwright tests pass (2 expected skips). Playwright builds and tests production on port 3100
+- Delivered the four destination pages and hub, three guides and index, FAQ, about and both demo policies. Shared `PermitTable`, guide block renderer, content table and back-to-top link are ready for S7 reuse. G7/G9 remain as documented; G15–G17 record the nearest approved copy used
+- Added an interim `/plan-your-trip` WhatsApp page to satisfy the sitemap criterion while keeping the full form/storage/emails in S8. S8 must replace it; S7 must still build the full homepage
+- MemPalace MCP tools were unavailable in the Codex session, so no graph or diary results were invented. Decision records and `docs/handoff.md` contain the session record
 
 ### Thursday 8 October
 
@@ -102,6 +109,7 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 - *Done when:* home LCP is the hero image, there's no layout shift from fonts or images, and the sun rule holds (C1)
 
 **S8. Enquiries (Phase 05)**
+- Replace S6's interim `/plan-your-trip` WhatsApp contact page with the form and full side panel. The interim `interimBody` content can then be removed
 - Drizzle schema, first migration, `npm run db:migrate` against the Neon dev branch, then production
 - Zod schema, `submit-enquiry` action, repository, rate limit, honeypot, `services/email/resend.ts`, the email builders (demo and live traveller versions, operator notification), the 04-tours.md price model estimate, `db:purge` script
 - `/plan-your-trip`: form, side panel, live estimate, success state, every error state, `?tour=` preselect, `start_enquiry` and `submit_enquiry`

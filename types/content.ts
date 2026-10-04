@@ -252,6 +252,8 @@ export interface Guide {
   image: MediaRef;
   close: CloseCta;
   related: LinkRef[];
+  /** Optional closing source stamp for guides with registered facts outside stamp blocks. */
+  factStamp?: RichText;
 }
 
 // ---------- Site config ----------

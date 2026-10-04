@@ -3,6 +3,8 @@
 **Written:** Sunday 4 October 2026, at the end of session S5, for the next coding agent.
 **Deadline:** Friday 9 October 2026, hard stop (AGENTS.md section 0).
 
+**S6 update:** 4 October 2026, Codex. Completed on branch `s6-pages`; merge is still to be reviewed. MemPalace MCP tools were not available, so this document and the decision records carry the session notes.
+
 Read in this order before writing code:
 
 1. `AGENTS.md`. Section 0 (the brief) overrides everything else. Section 38 describes MemPalace.
@@ -17,6 +19,7 @@ Read in this order before writing code:
 ## 1. Where things stand
 
 Sessions S1 to S5 are done and merged into `master` (PRs #1 to #4).
+S6 is complete on `s6-pages`.
 
 | Session | What it delivered |
 | --- | --- |
@@ -25,11 +28,12 @@ Sessions S1 to S5 are done and merged into `master` (PRs #1 to #4).
 | S3 Content | Every page's copy as typed content in `content/`, a read layer in `lib/content/`, verbatim and integrity tests |
 | S4 Photos | 15 Unsplash photos in `public/images/` with credits in `content/media.ts`, Open Graph crops, `components/media/site-image.tsx` |
 | S5 Tours | `/tours/[slug]` (6 prerendered pages) and `/tours` with URL filters (`features/tours/`), reusable content components |
+| S6 Pages | Destination hub and four parks, guides index and three guides, FAQ, about, demo booking terms/privacy, and an interim `/plan-your-trip` WhatsApp page |
 
-**Pages that exist:** `/` (interim: hero copy and photo only), `/tours`, `/tours/[slug]`, the 404 page, `/styleguide` (development only).
-**Pages still to build:** see section 4. All of their copy is already in `content/`.
+**Pages that exist:** all 22 sitemap URLs, the 404 page, and `/styleguide` (development only). `/` still has the interim hero; `/plan-your-trip` is a WhatsApp contact page until S8.
+**Pages still to complete:** full homepage (S7) and enquiry form with storage/emails (S8). All of their copy is already in `content/`.
 
-**Checks at handoff:** `tsc` and lint clean, 201 Vitest tests, 54 Playwright tests (2 skips by design).
+**Checks after S6:** typecheck and lint clean, 203 Vitest tests, 104 Playwright tests (2 skips by design). All 22 sitemap URLs pass the crawl; every new route passes axe WCAG 2.2 AA and the 360px overflow check.
 
 ---
 
@@ -83,6 +87,9 @@ npm run build
 - **`components/content/`:** `AtAGlance`, `FaqList`, `InclusionList`, `KeyFactsStrip`, `FactStamp`, `RelatedLinks`, `Price`.
 - **`components/layout/`:** `Section`, `CloseCta` (`sun` prop; `tourSlug` pre-fills the enquiry), `OnThisPage`, `SiteBreadcrumb`, `WhatsAppLink`.
 - **`features/tours/components/`:** `TripCard`, which the home and destination pages will reuse.
+- **S6 additions:** `ContentTable`, `PermitTable` (guide/home columns), `BackToTop`, destination/guide cards, and `features/guides/components/guide-block.tsx` (all block types). `CloseCta` accepts an optional `secondary` node. New pages read approved copy through `lib/content/pages.ts` and permit data through `lib/content/facts.ts`.
+- **Test server:** Playwright now uses `reuseExistingServer: false` to prevent testing a stale production build. Stop any test server left on port 3100 before running the suite. In the restricted Codex shell, process teardown needed an escalated test run; Frank's ordinary shell should not have that restriction.
+- **About client swap:** fill `about.team.liveMembers` and `about.licences.live` with real client details. Sample identities are selected only in demo mode.
 
 ---
 
@@ -90,7 +97,7 @@ npm run build
 
 | Session | Scope | Notes |
 | --- | --- | --- |
-| **S6** | `/destinations` hub, `/destinations/[slug]` (4), `/guides` index, `/guides/[slug]` (3), `/faq`, `/about`, `/booking-terms`, `/privacy` | All copy is in `content/`. Guides use the block model (`GuideBlock`, including `permitTable` from `content/facts.ts` and `monthEntry`). Destination pages show "Tours that visit" via `getToursForDestination`. JSON-LD: TouristDestination with `sameAs`, Article for guides, FAQPage, ItemList on hubs, AboutPage. Policies show `demoPolicyNotice` and use `pickVariant()` from `config/demo.ts`. Done when every sitemap URL returns 200, with one h1 and a valid canonical |
+| **S6: done** | Destinations, guides, FAQ, about and policies | `s6-pages`. All blocks, derived tours, allowed JSON-LD and demo variants implemented. See decisions 001/002/004 S6 notes and plan gaps G15–G17 |
 | **S7** | Full homepage (`content/pages/home.ts`, 10 sections) | Trip finder (Experience, Month as the next 12 months, Length; "Find trips" is sun) goes to `/tours?experience=&month=YYYY-MM&length=` and fires `tour_search`. Reuse `parseFilters`/`toQueryString` from `features/tours/lib/filters.ts`. Month picker is a ToggleGroup of 12 bars coloured by `seasons.ts` `kind` (gap G13). Permit table from `content/facts.ts` (home columns). Set `revalidate = 86400` so the finder's month list rolls daily |
 | **S8** | Enquiry flow, `/plan-your-trip` | Fully specified in decision 003 and `content/pages/plan-your-trip.ts` (field errors, placeholders, stepper labels, demo success state). Packages are already installed: zod, drizzle-orm, @neondatabase/serverless, drizzle-kit. Neon: `.env.local` is the `dev` branch and `.env` is `main`; migrate `dev` first. Resend is called over its REST API with `fetch` (no SDK), from `EMAIL_FROM` (`mail.veilcode.studio` is verified). Add `IP_HASH_SECRET` to `env.example`, `.env.local` and Vercel. Write `content/emails.ts` from 11-emails-and-meta.md (demo and live traveller emails, operator email) and add it to the verbatim test |
 | **S9** | Verification | Sitemap crawl test, axe on every template, Lighthouse, Schema validator, and a re-check of the yellow fever rule and UWA fees (12-fact-register.md) |
@@ -120,6 +127,8 @@ Cut order if time runs short: `docs/plan.md`, "What gets cut first".
 - G13: the month legend has no label for March's "Long rains begin".
 - G14: no free Nile rafting photo exists; the Jinja card shows a Nile tour boat.
 - F18: the GA ID is also set for Preview and in local `.env`, so test visits reach GA unless filtered.
+- G15–G17: closing copy reused from existing pages, interim enquiry-page copy, and the seasons guide's global fact stamp. No new wording was invented; review the choices in `docs/plan.md`.
+- **S8 must replace the interim `/plan-your-trip` page.** There is no enquiry form, database write or confirmation email yet. The interim page deliberately omits the panel's form/confirmation promises.
 
 ---
 
