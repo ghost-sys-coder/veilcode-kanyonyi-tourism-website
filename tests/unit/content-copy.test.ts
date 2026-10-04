@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { meta, titleSuffix } from "@/content/meta";
 import { site } from "@/content/site";
 import { ui } from "@/content/ui";
+import * as content from "@/lib/content/all";
 
 // Copy rules from docs/copy/00-README.md, 01-voice.md and 11-emails-and-meta.md.
 
@@ -25,6 +26,7 @@ const rendered = [
   ...allStrings(site, "site"),
   ...allStrings(ui, "ui"),
   ...allStrings(meta, "meta"),
+  ...allStrings(content, "content"),
 ];
 
 describe("page metadata (11-emails-and-meta.md)", () => {

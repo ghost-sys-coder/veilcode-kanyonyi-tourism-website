@@ -361,6 +361,15 @@ The homepage reads three columns and the permit guide reads four, both from thes
 - every `WithDemo` entry has both variants filled
 - permit prices in prose match `facts.ts`: a small allow-list maps each fact to the strings that must appear (e.g. `"USD 800"` in Bwindi activities). This catches drift when facts.ts changes but prose doesn't.
 
+## Implementation notes (S3, 4 October 2026)
+
+- **Verbatim enforcement.** `tests/unit/content-verbatim.test.ts` checks every string in `content/` against `docs/copy/*.md` after stripping Markdown, "†" fact markers and placeholder names. It inspects more than 300 strings and fails on any rewording. Image alt text is excluded, because it is written at sourcing time.
+- **Field checks.** `tests/unit/content-integrity.test.ts` parses the `Field:` lines in 04-tours.md and 05-destinations.md and compares names, tags, meta lines, costs, the from price, best months, destinations and every price-table row with the content files. It also checks that the derived "Tours that visit" lists match the copy, and that every link, image and jump link resolves.
+- **Media model.** `MediaEntry.photo` is optional. Each planned shot from 13-photo-brief.md is registered now, with its aspect ratio and alt text. Until S4 adds the photo, pages render the brief's placeholder: a flat `--muted` block with the alt text.
+- **Permit table** is a `permitTable` block that reads `content/facts.ts`, so the home page and the permit guide share one set of fees.
+- **Policies** are `WithDemo<PolicySection[]>`. `[CLIENT: ...]` placeholders with no demo value are omitted from the live variant rather than rendered.
+- **Emails** move to `content/emails.ts` in S8, with the enquiry flow.
+
 ## Consequences
 
 - Content edits need a developer and a deploy. That is acceptable until an operator needs self-service editing, which is the CMS trigger named in the brief.
