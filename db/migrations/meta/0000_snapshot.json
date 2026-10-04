@@ -1,0 +1,253 @@
+{
+  "id": "2862adea-0d46-4a11-9daf-83ab82006e45",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.enquiries": {
+      "name": "enquiries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "reference": {
+          "name": "reference",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'KX-' || nextval('enquiry_ref_seq')"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "tour_slug": {
+          "name": "tour_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "travel_month": {
+          "name": "travel_month",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "flexibility": {
+          "name": "flexibility",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "travellers": {
+          "name": "travellers",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "anyone_under_15": {
+          "name": "anyone_under_15",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "residency": {
+          "name": "residency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "whatsapp": {
+          "name": "whatsapp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consent_at": {
+          "name": "consent_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estimate_usd": {
+          "name": "estimate_usd",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_path": {
+          "name": "source_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "utm_source": {
+          "name": "utm_source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "utm_medium": {
+          "name": "utm_medium",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "utm_campaign": {
+          "name": "utm_campaign",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ip_hash": {
+          "name": "ip_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "traveller_email_status": {
+          "name": "traveller_email_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "operator_email_status": {
+          "name": "operator_email_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'new'"
+        }
+      },
+      "indexes": {
+        "enquiries_created_at_idx": {
+          "name": "enquiries_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "enquiries_ip_hash_created_at_idx": {
+          "name": "enquiries_ip_hash_created_at_idx",
+          "columns": [
+            {
+              "expression": "ip_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "enquiries_reference_unique": {
+          "name": "enquiries_reference_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "reference"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "travellers_range": {
+          "name": "travellers_range",
+          "value": "\"enquiries\".\"travellers\" between 1 and 12"
+        },
+        "residency_values": {
+          "name": "residency_values",
+          "value": "\"enquiries\".\"residency\" in ('outside-east-africa','east-africa')"
+        },
+        "traveller_email_status_values": {
+          "name": "traveller_email_status_values",
+          "value": "\"enquiries\".\"traveller_email_status\" in ('pending','sent','failed')"
+        },
+        "operator_email_status_values": {
+          "name": "operator_email_status_values",
+          "value": "\"enquiries\".\"operator_email_status\" in ('pending','sent','failed')"
+        },
+        "status_values": {
+          "name": "status_values",
+          "value": "\"enquiries\".\"status\" in ('new','quoted','booked','lost')"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {
+    "public.enquiry_ref_seq": {
+      "name": "enquiry_ref_seq",
+      "schema": "public",
+      "increment": "1",
+      "startWith": "1001",
+      "minValue": "1",
+      "maxValue": "9223372036854775807",
+      "cache": "1",
+      "cycle": false
+    }
+  },
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

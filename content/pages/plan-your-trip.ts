@@ -6,12 +6,6 @@ export const planYourTrip = {
   h1: "Tell us when. We'll plan the rest.",
   lede: "Share your dates and who's travelling. Within one working day, a planner sends you a day-by-day plan and an itemised quote. No payment until you decide.",
 
-  // Interim S6 contact body. S8 replaces the interim route with the specified form and full panel.
-  interimBody: {
-    live: "We adjust it until it's right. Most trips take two or three rounds.",
-    demo: "Frank from VeilCode will reply personally, about the demo or about a website like this for your business.",
-  },
-
   sidePanel: {
     live: {
       heading: "What happens next",

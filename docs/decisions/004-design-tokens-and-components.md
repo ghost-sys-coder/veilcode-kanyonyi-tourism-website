@@ -314,3 +314,9 @@ AGENTS.md section 0 lists the Base UI differences. These are the places they app
 - shadcn component files will differ from upstream in their class strings. Re-running `shadcn add --overwrite` on them would lose the brand changes. Note this in each file with a one-line comment at the top.
 - No dark mode. The token structure keeps it possible later.
 - The currency toggle costs 2 spans per price and about 20 lines of client JS. That is far cheaper than hydrating every price.
+
+### Enquiry patterns (S8, 4 October 2026)
+
+- The page composes the existing Section/breadcrumb with a form and a sticky desktop side panel, stacked below the form on mobile. The under-15 rule uses FactStamp. The only sun action is Send enquiry; success uses the existing success surface/icon tokens and forest links.
+- Installed Base UI Field/Input/Select/RadioGroup/Checkbox/Button compose the form. Select roots have items including a null placeholder; full resident labels wrap within the viewport. Buttons that navigate remain real styled links. Upstream shadcn files and tokens were not changed.
+- Estimates reuse Price and its prepaint USD/UGX spans. Error summaries/inline messages and success headings have tested focus and announcements. Native controls are used only inside noscript because interactive Base UI popup controls need JavaScript; the ordinary path remains shadcn.
