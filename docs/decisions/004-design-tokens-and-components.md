@@ -268,7 +268,7 @@ Source files are exported at a maximum of 2400px wide and run through `sharp` (a
 
 AGENTS.md section 0 lists the Base UI differences. These are the places they apply:
 
-- Link-styled buttons: `<Button render={<Link href="/plan-your-trip" />} nativeButton={false}>`
+- Link-styled buttons: `<Link href="/plan-your-trip" className={cn(buttonVariants(), "...")}>` (the S2 finding below supersedes the original Button/render example)
 - Sheet, Popover and Tooltip triggers: `render={<Button … />}`, never `asChild`
 - Trip finder and form selects: `items` on the `Select` root, with the empty option as an item whose `value` is `null`
 - Month picker, currency toggle and filter chips (`ToggleGroup`) and FAQ (`Accordion`): the `multiple` boolean, and `defaultValue` is always an array
@@ -320,3 +320,9 @@ AGENTS.md section 0 lists the Base UI differences. These are the places they app
 - The page composes the existing Section/breadcrumb with a form and a sticky desktop side panel, stacked below the form on mobile. The under-15 rule uses FactStamp. The only sun action is Send enquiry; success uses the existing success surface/icon tokens and forest links.
 - Installed Base UI Field/Input/Select/RadioGroup/Checkbox/Button compose the form. Select roots have items including a null placeholder; full resident labels wrap within the viewport. Buttons that navigate remain real styled links. Upstream shadcn files and tokens were not changed.
 - Estimates reuse Price and its prepaint USD/UGX spans. Error summaries/inline messages and success headings have tested focus and announcements. Native controls are used only inside noscript because interactive Base UI popup controls need JavaScript; the ordinary path remains shadcn.
+
+### Verification findings (S9, 5 October 2026)
+
+- The header/footer logo link derives its accessible name from the visible approved wordmark and subline. Its previous overriding label omitted "Uganda", failing WCAG 2.5.3 (Label in Name) in Lighthouse despite a 100 accessibility score. Removing that override changes no visible copy or styling. A Playwright regression checks both landmarks.
+- All template axe scans now include `wcag21a` as well as `wcag2a`, `wcag2aa`, `wcag21aa` and `wcag22aa`; AA conformance includes the A rules.
+- The trip-finder test waits for the new month popup's 13 options before reading them. Base UI retains the previous experience popup during its exit animation; the old immediate count occasionally included both popups. The component and animation are unchanged.

@@ -138,16 +138,22 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 
 ### Friday 9 October (ship day)
 
-**S9. Verification (morning)**
+**S9. Verification (morning)**: done 5 October 2026, branch `s9-verification`
 - Playwright: enquiry happy path (email sending stubbed with a test env flag), validation errors, rate limit, every sitemap URL (200, one h1, canonical, noindex), `@axe-core/playwright` on one page of each template, a mobile 360px pass
 - Lighthouse on home, a tour page and plan-your-trip (mobile)
 - Schema Markup Validator on one URL per template, recorded in `docs/research/seo-validation.md`
 - **Re-check the yellow fever rule and UWA figures** (12-fact-register.md flags yellow fever as two days old)
 - Fix list triage: fix what blocks a demo and log the rest
+- Final checks: typegen/typecheck/lint/build pass; 253 unit tests and 146 Playwright tests pass (2 expected skips). All 22 sitemap pages fit at 360px with valid internal links/fragments, one H1, canonical, metadata/OG and both noindex signals. Fuller axe tags include WCAG 2.1 A; the shared logo now derives its accessible name from its visible text, fixing Label in Name. The finder test waits for the closing popup animation correctly
+- Schema Markup Validator fetched all 12 representative templates with zero errors and warnings. Google's Rich Results Test returned "Log in and try again" without a result; Frank should run the decision 002 Google checks from a signed-in browser during S10. No Google pass is claimed
+- Mobile Lighthouse production scores: home 84, tour 78, form 85; accessibility/best practices 100. SEO 69/69/66 is reduced only by required demo noindex. JavaScript blocking time is a logged follow-up, not a demo blocker. See `docs/research/s9-verification.md` and `docs/research/seo-validation.md` for evidence and limits
+- Primary UWA scanned notice and the dated official yellow-fever entry notice rechecked; the published copy needs no changes. Older immigration FAQ and unspecified discount expiry are documented in the fact register. Existing G18/G20 future-year gaps remain
+- MemPalace MCP tools unavailable; durable docs carry the session record. No production enquiry or email sent in S9
 
 **S10. Ship (early afternoon, stop by 17:00 EAT)**
 - Production env vars confirmed, production migration applied, production deploy
 - Smoke test on `kanyonyi.veilcode.studio`: one real enquiry, a WhatsApp link on mobile, consent accept and reject, `noindex` present
+- Run the remaining decision 002 Google Rich Results checks from a signed-in browser (the S9 service attempt required login). Keep noindex; per-template Schema Markup Validator already passes
 - Update `docs/decisions/` with anything that changed, and write a short `docs/launch-notes.md` (what shipped, what was cut, known issues)
 
 ## What gets cut first if we fall behind

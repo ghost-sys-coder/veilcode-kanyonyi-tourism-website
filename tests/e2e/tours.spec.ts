@@ -115,7 +115,7 @@ test.describe("tour pages", () => {
   test("no WCAG 2.2 AA violations on the listing and a tour page", async ({ page }) => {
     for (const path of ["/tours", "/tours/7-day-primates-and-savannah"]) {
       await page.goto(path);
-      const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+      const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
       expect(results.violations.map((v) => `${path} ${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`)).toEqual([]);
     }
   });

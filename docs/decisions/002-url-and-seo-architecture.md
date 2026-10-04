@@ -185,6 +185,13 @@ FAQ rich results are now limited to authoritative government and health sites, s
 
 ## Consequences
 
+### Verification implementation (S9, 5 October 2026)
+
+- The sitemap crawl now verifies titles/descriptions and Open Graph self URLs/image origins as well as status, H1, canonical and noindex. A browser pass checks all 22 pages at 360px and resolves every internal link and fragment against the actual sitemap/target IDs.
+- External Schema Markup Validator fetched/rendered all 12 representative public templates with zero errors and warnings; connected Organization nodes appear within WebSite. Schema output and allowed types are unchanged.
+- The Google Rich Results Test attempt returned "Log in and try again" without a result. The additional per-template Google checks in section 12 remain a signed-in S10 task for Frank. No pass or rich-result eligibility is inferred from the Schema.org results.
+- Lighthouse's scored SEO failure is the intentional demo noindex. Indexing protection remains mandatory. Evidence and limitations are in `docs/research/seo-validation.md` and `docs/research/s9-verification.md`.
+
 ### Homepage implementation (S7, 4 October 2026)
 
 - The trip finder uses `parseFilters`/`toQueryString` and navigates to the existing `/tours` query contract. A submit sends one `tour_search` event. Month links use the corresponding date in the rolling twelve-month list; filtered pages retain the `/tours` canonical.
