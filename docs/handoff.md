@@ -1,6 +1,6 @@
 # Handoff: Kanyonyi Expeditions showcase build
 
-**Updated:** Monday 5 October 2026, through S9 verification, for the next coding agent.
+**Updated:** Monday 5 October 2026, through S10 production launch verification, for the next coding agent.
 **Deadline:** Friday 9 October 2026, hard stop (AGENTS.md section 0).
 
 **S6 update:** 4 October 2026, Codex. Merged into `master` as PR #6. **S7 update:** full homepage completed on `s7-home`, merged in PR #7. MemPalace MCP tools were not available, so this document and the decision records carry the session notes.
@@ -18,8 +18,8 @@ Read in this order before writing code:
 
 ## 1. Where things stand
 
-Sessions S1 to S8 are done and merged into `master` (PRs #1 to #8, including the handoff PR).
-S8 is merged in [PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/8), implementation commit `029963e`, master `8a70d88`. The protected preview passes authenticated checks. KX-1006 is stored on dev; Frank confirmed the support@ traveller confirmation, and Resend reports the frank@ operator retry delivered after its old bounce suppression was removed with explicit approval. The approved main migration and Sensitive production IP hash secret are verified. The merged production build is redeployed to load the secret. Acceptance documentation follows on `s8-acceptance`.
+Sessions S1 to S9 are done and merged into `master`; S8 acceptance docs are merged in #9 and S9 in #11 (`c7ffd2e`). The duplicate stacked #10 is closed. S10 production release/smoke is verified; its launch record is on `s10-launch`. Google's external Code checks remain deferred after a service login error.
+S8 is merged in [PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/8), implementation commit `029963e`, then-master `8a70d88`. The protected preview passed authenticated checks. KX-1006 is stored on dev; Frank confirmed the support@ traveller confirmation, and Resend reports the frank@ operator retry delivered after its old bounce suppression was removed with explicit approval. The approved main migration and Sensitive production IP hash secret are verified. The production build was redeployed to load the secret. Acceptance documentation is merged in #9.
 
 | Session | What it delivered |
 | --- | --- |
@@ -32,9 +32,10 @@ S8 is merged in [PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tou
 | S7 Home | Full ten-section homepage, trip finder, month bars, shared cards/permit table, demo review placeholder, FAQ and closing actions; year-aware future fee copy and listing badges |
 | S8 Enquiries | Full form and estimates, no-JS fallback, dev/main schema, storage, atomic rate limiting, escaped Resend emails and retention dry run; real preview storage and both deliveries verified |
 | S9 Verification | Fuller axe rules and logo Label in Name fix; all-page metadata, internal-link/fragment and 360px crawl; mobile Lighthouse, external schema checks and primary fact recheck |
+| S10 Launch | Production configuration/schema/deploy verified; 22-route crawl, mobile WhatsApp, live consent and one real main enquiry with both Resend deliveries; launch notes and external Google limitation recorded |
 
 **Pages that exist:** all 22 sitemap URLs, the 404 page, and `/styleguide` (development only). Home and the full enquiry form/storage/emails are complete.
-**Pages still to complete:** none in the current content cap. S9 is done on `s9-verification`, stacked on the open S8 acceptance docs PR #9. S10 final launch checks remain, including Google's additional Rich Results tests from a signed-in browser; the unauthenticated S9 attempt returned a login error.
+**Pages still to complete:** none in the current content cap. Production is verified on `c7ffd2e`. Google's additional per-template Rich Results Code tests remain an external manual follow-up: both URL and Code attempts returned a login error. Do not remove demo noindex to run a test.
 
 **Checks after S7:** typegen/typecheck, lint and production build clean, 206 Vitest tests, 120 Playwright tests (2 skips by design). All 22 sitemap URLs pass the crawl. Home passes axe and the 360px overflow check; hero image is the measured LCP element on both profiles and initial CLS is at most 0.01.
 
@@ -42,7 +43,9 @@ S8 is merged in [PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tou
 
 **Checks after S9:** typegen/typecheck/lint/build pass; 253 unit tests and 146 Playwright passes (2 expected skips). Every sitemap page fits at 360px; all internal links and fragments resolve. All template axe scans include WCAG 2.1 A and pass; the logo's old overriding label omitted visible "Uganda" and is removed. All 12 Schema Markup Validator URLs pass with zero errors/warnings. Mobile Lighthouse performance: home 84, tour 78, form 85; blocking time is logged. Required noindex accounts for its SEO penalty. See `docs/research/s9-verification.md` and `docs/research/seo-validation.md`.
 
-**S9 review:** [PR #10](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/10), implementation `a9de3d1`, successful Vercel check. Its [protected preview](https://veilcode-tourism-i7k1ll67u-ghostsyscoders-projects.vercel.app) passes all 22 route checks and home/form axe at 360px using existing authenticated access. No production enquiry was created. Merge the open #9 acceptance docs PR first, then retarget #10 to master. The S9 preview has its own branch-scoped Sensitive dev hash secret.
+**S9 review:** merged via [PR #11](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/11). Its implementation `a9de3d1` had a successful Vercel check and protected preview crawl/axe at 360px. The duplicate #10 is closed; #9 is merged. The S9 preview has its own branch-scoped Sensitive dev hash secret.
+
+**S10 checks:** production deployment `veilcode-tourism-k5d7s3q71-ghostsyscoders-projects.vercel.app` is READY for master `c7ffd2e` and serves the public alias. All 22 routes pass status/H1/canonical/noindex, home/form pass axe at 360px, and mobile WhatsApp plus real analytics accept/reject/withdrawal pass. KX-1001 is the single synthetic main enquiry: November 2026, two travellers, USD 3,300; Resend reports delivered to both support@ and frank@. No retry/duplicate. Typecheck/lint/unit checks pass; the full browser run had one timeout, and that case passed unchanged with one worker. See `docs/launch-notes.md` and `docs/research/s10-launch-verification.md` for evidence and limits.
 
 ---
 
@@ -113,8 +116,8 @@ npm run build
 | **S6: done** | Destinations, guides, FAQ, about and policies | `s6-pages`. All blocks, derived tours, allowed JSON-LD and demo variants implemented. See decisions 001/002/004 S6 notes and plan gaps G15–G17 |
 | **S7: done** | Full ten-section homepage | `s7-home`, merged PR #7. Trip finder, month bars, cards and demo content are verified. See decisions 001/002/004 S7 notes and G18 |
 | **S8: done** | Enquiry flow, `/plan-your-trip` | `s8-enquiries`, merged PR #8. Local tests pass (253 unit, 2 real DB, 142 browser; 2 expected skips). KX-1006 is stored in dev; both emails delivered. Main schema and production secret are configured after explicit approval; F20/F21 resolved. See 003 S8 notes |
-| **S9** | Verification | Sitemap crawl test, axe on every template, Lighthouse, Schema validator, and a re-check of the yellow fever rule and UWA fees (12-fact-register.md) |
-| **S10** | Ship | Production env, production migration, deploy, smoke test, `docs/launch-notes.md` |
+| **S9: done** | Verification | Merged #11; automated checks, Lighthouse, all 12 external schema checks and primary fact recheck complete |
+| **S10: production/smoke done** | Ship | Deployment/configuration/main schema and real enquiry/both deliveries verified; launch notes. Google Code tests remain an external manual follow-up |
 
 Cut order if time runs short: `docs/plan.md`, "What gets cut first".
 
@@ -143,7 +146,7 @@ Cut order if time runs short: `docs/plan.md`, "What gets cut first".
 - G15–G17: closing copy reused from existing pages, interim enquiry-page copy, and the seasons guide's global fact stamp. No new wording was invented; review the choices in `docs/plan.md`.
 - G18: supply year-specific month notes and a weather-only green-season legend. For future years the homepage/listing use existing weather lines and the approved 2027 rates notice rather than unconfirmed 2026 discounts.
 - G19–G21: approved operator From name fallback, future-year estimate copy/rates, and specific maximum-length/invalid-choice errors still need copy review. Existing approved lines are used.
-- **S8 acceptance/production setup:** F20/F21 are resolved after Frank's explicit approval. Both KX-1006 deliveries, main schema and production secret are verified. S9 is now complete; S10 production smoke and the signed-in Google checks remain.
+- **S8/S10 acceptance:** F20/F21 are resolved; KX-1006 dev and KX-1001 production deliveries are verified. Main schema/secret and production smoke are complete. Google Code checks remain an external manual follow-up; no indexing request should be made for this fictional demo.
 - **Retention/monitoring:** schedule demo deletion before October 2027; `db:purge` defaults to dry run. App `sent` means accepted by Resend, not proven delivery; use Resend delivery logs as well as failed/pending rows until delivery webhooks/admin monitoring exist.
 
 ---

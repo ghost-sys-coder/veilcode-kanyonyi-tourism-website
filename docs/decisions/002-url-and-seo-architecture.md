@@ -165,7 +165,7 @@ FAQ rich results are now limited to authoritative government and health sites, s
 
 - Playwright: every sitemap URL returns 200, has exactly one `<h1>`, a canonical equal to its own clean URL, `noindex` in both the meta tag and the header on the demo, and JSON-LD that parses
 - Unit test: forbidden schema types are absent (see section 9)
-- Manual: Schema Markup Validator and Rich Results Test on one URL per page type (the tests can fetch a noindexed page), recorded in `docs/research/seo-validation.md`. Run `/seo-audit` or `seo-technical` if available, otherwise do the same checks by hand
+- Manual: Schema Markup Validator and Rich Results Test on one representative page per template, recorded in `docs/research/seo-validation.md`. Keep demo noindex. Google's current help says a noindexed page cannot use its URL test; use the actual page markup in Code mode if available and label that result as a code test, not a crawl/indexing check. Run `/seo-audit` or `seo-technical` if available, otherwise do the same checks by hand
 
 ## Implementation notes (S5, 4 October 2026)
 
@@ -191,6 +191,12 @@ FAQ rich results are now limited to authoritative government and health sites, s
 - External Schema Markup Validator fetched/rendered all 12 representative public templates with zero errors and warnings; connected Organization nodes appear within WebSite. Schema output and allowed types are unchanged.
 - The Google Rich Results Test attempt returned "Log in and try again" without a result. The additional per-template Google checks in section 12 remain a signed-in S10 task for Frank. No pass or rich-result eligibility is inferred from the Schema.org results.
 - Lighthouse's scored SEO failure is the intentional demo noindex. Indexing protection remains mandatory. Evidence and limitations are in `docs/research/seo-validation.md` and `docs/research/s9-verification.md`.
+
+### Launch verification (S10, 5 October 2026)
+
+- The public production release passes the 22-page crawl and the corrected logo/home/form accessibility checks. Search Console setup does not change the demo noindex policy; no indexing request was submitted.
+- Current Google help contradicts the earlier section 12 assumption about noindexed URL tests. Section 12 now permits explicitly labelled Code-mode checks using actual page markup. This validates code only and does not establish crawlability or rich-result eligibility.
+- Actual home JSON-LD was submitted in Code mode; Google again returned "Log in and try again" without a result. Per-template Google checks remain an external manual follow-up. The Schema Markup Validator's 12 successful fetch/render checks stand independently. See `docs/research/s10-launch-verification.md`.
 
 ### Homepage implementation (S7, 4 October 2026)
 

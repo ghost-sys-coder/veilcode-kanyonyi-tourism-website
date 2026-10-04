@@ -139,7 +139,7 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 ### Friday 9 October (ship day)
 
 **S9. Verification (morning)**: done 5 October 2026, branch `s9-verification`
-- Review: [PR #10](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/10), stacked on the open acceptance docs PR #9. Implementation `a9de3d1` has a successful Vercel check; its protected preview passes the 22-route crawl and home/form axe at 360px. Merge #9 first and retarget #10 to master
+- Review: merged through [PR #11](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/11); acceptance docs #9 is merged and duplicate #10 is closed. Implementation `a9de3d1` has a successful Vercel check; its protected preview passes the 22-route crawl and home/form axe at 360px
 - Playwright: enquiry happy path (email sending stubbed with a test env flag), validation errors, rate limit, every sitemap URL (200, one h1, canonical, noindex), `@axe-core/playwright` on one page of each template, a mobile 360px pass
 - Lighthouse on home, a tour page and plan-your-trip (mobile)
 - Schema Markup Validator on one URL per template, recorded in `docs/research/seo-validation.md`
@@ -151,11 +151,17 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 - Primary UWA scanned notice and the dated official yellow-fever entry notice rechecked; the published copy needs no changes. Older immigration FAQ and unspecified discount expiry are documented in the fact register. Existing G18/G20 future-year gaps remain
 - MemPalace MCP tools unavailable; durable docs carry the session record. No production enquiry or email sent in S9
 
-**S10. Ship (early afternoon, stop by 17:00 EAT)**
+**S10. Ship (early afternoon, stop by 17:00 EAT)**: production release and smoke done 5 October 2026; record branch `s10-launch`. External Google Code checks remain deferred below
 - Production env vars confirmed, production migration applied, production deploy
 - Smoke test on `kanyonyi.veilcode.studio`: one real enquiry, a WhatsApp link on mobile, consent accept and reject, `noindex` present
 - Run the remaining decision 002 Google Rich Results checks from a signed-in browser (the S9 service attempt required login). Keep noindex; per-template Schema Markup Validator already passes
 - Update `docs/decisions/` with anything that changed, and write a short `docs/launch-notes.md` (what shipped, what was cut, known issues)
+- S9 is merged through PR #11, master `c7ffd2e`; PR #9 is merged and duplicate PR #10 is closed. Production deployment is READY for that release. Required settings and existing main migration verified; no migration rerun or local-dev switch to main
+- Production: all 22 routes return 200 with one H1, self canonical and both noindex signals. Home/form have zero axe violations and no overflow at 360px. Mobile WhatsApp number/message and real analytics accept/reject/withdrawal pass
+- One synthetic production enquiry KX-1001 stores two travellers, November 2026 and USD 3,300 on main; reference/estimate match screen and both email bodies. Resend confirms both support@ and frank@ deliveries. Main now has one row; no duplicate submission or email retry was made
+- Typegen/typecheck/lint and 253 unit tests pass. Full browser run: 145 passed, 2 skipped, one mobile multi-state axe timeout. The sole timed-out case passed unchanged with one worker; all 146 cases have passed. Detailed evidence is in `docs/research/s10-launch-verification.md`
+- Google Code mode was tried with actual home JSON-LD; it also returned "Log in and try again" without a result. Current Google help limits noindexed URL tests, so 002 is corrected. Per-template Google Code checks remain an external manual follow-up in Frank's functioning browser; no Google pass is claimed. Search Console setup does not change noindex; 12 Schema Markup Validator templates already pass
+- `docs/launch-notes.md` records shipped scope, cuts and follow-ups. MemPalace MCP tools unavailable; durable docs carry the session record
 
 ## What gets cut first if we fall behind
 
