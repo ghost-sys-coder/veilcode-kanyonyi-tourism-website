@@ -1,6 +1,6 @@
 # 003: Enquiry flow
 
-**Status:** Proposed (Phase 01, 4 October 2026)
+**Status:** Accepted and implemented (S8, 4 October 2026)
 **Applies to:** Phase 05
 
 ## Context
@@ -269,3 +269,28 @@ Names follow `env.example` (added 4 October 2026).
 - An enquiry counts as successful once it is stored, even if an email fails. Frank should check `operator_email_status = 'failed'` rows, either with a saved Neon query or a weekly look, until there is an admin view.
 - A rate limit stored in Postgres adds one query per submission. That is fine at demo and small-operator scale.
 - Everything needed to answer "which pages and sources produce enquiries" sits in one table, independent of cookie consent.
+
+## S8 implementation notes (4 October 2026)
+
+- The full form replaces the interim contact page. A shared Zod schema validates on blur, before an enhanced submit, and again in the Server Action. Required placeholders, errors, estimate, demo panel and success copy come through `lib/content/`; `content/emails.ts` transcribes both traveller variants and the operator notification. No dependency was added.
+- The direct `useActionState` action and permalink remain on the HTML form. After hydration, an awaited call to that same action catches network failures while preserving all fields. Native selects/radios/consent inside `noscript` are a documented exception to the shadcn rule: Base UI popup controls require JavaScript. A no-JavaScript POST and confirmation are tested.
+- The summary receives focus after invalid submission, matching 08-plan-your-trip.md; its links focus the corresponding fields. This resolves the conflicting first-field-focus wording in section 9. Inline errors include an icon, text and described-by references. Base UI files were not changed.
+- Honeypot detection runs before ordinary validation, resolving the original `website.max(0)`/fake-success contradiction. Filled traps return success without storage, mail or conversion analytics. Private configuration is validated lazily and error logs contain only stage, reference and error name.
+- The reference is a sequence-backed database default in the same insert. The rate count and insert run in a Neon HTTP batch transaction, preceded by a transaction-scoped advisory lock on the keyed IP hash. Five simultaneous dev requests stored exactly three rows. Both indexes and database constraints are verified against dev; disposable fixture rows are removed.
+- The two Resend requests use distinct keys, `{reference}:traveller` and `{reference}:operator`. A shared key would reject the second payload with HTTP 409 ([Resend documentation](https://resend.com/changelog/idempotency-keys)). Each has an eight-second abort signal. Stored enquiries remain successful if mail or its status update fails; failed/pending statuses need manual monitoring until an admin view exists.
+- Traveller HTML uses escaped values, table layout, inline DESIGN.md colour tokens and a plain-text part. Demo/live sending names and bodies are selected together. The operator From name uses the nearest approved `Kanyonyi Expeditions` rather than the unapproved `Kanyonyi enquiries` from section 6 (G19). No operator-specific mailbox is introduced. Optional flexibility is omitted if unset.
+- `mail.veilcode.studio` is verified (handoff F4 supersedes the earlier section 6 snapshot). The local IP hash secret and branch-specific S8 Vercel Preview secret are configured without committing or logging them. Vercel overwrites the forwarded IP header ([request-header documentation](https://vercel.com/docs/headers/request-headers)); a different hosting/proxy setup must re-establish that trust boundary.
+- `ENQUIRY_TEST_MODE=true` substitutes local storage and sends only in the Playwright server. Either Vercel marker makes this fail closed. Test headers cannot switch a deployed environment into this mode. Unit tests verify this boundary; the preview acceptance test must use real Neon and Resend.
+- `drizzle-kit` preloads `.env`, which could override Next env loading. Local migration config explicitly chooses `.env.local` and rejects an endpoint shared with `.env`. SQL and metadata are committed; builds never migrate. `db:migrate:prod` loads `.env` only and asks for `migrate-main`. Dev is migrated and verified; production application and preview delivery are recorded below after acceptance.
+- `db:purge` defaults to a dry run. `--apply` deletes demo rows older than 12 months, or unbooked live rows older than 24 months. The dry run returned zero eligible rows. Schedule production retention before October 2027; honour earlier deletion requests manually.
+- The existing 2026 estimate small print remains verbatim although the 18-month picker extends beyond 2026 (G20). Long-field/invalid optional-choice messages reuse the approved generic required line or existing field error (G21); no new error copy was invented. A FactStamp accompanies the under-15 permit rule. Custom enquiries send GA estimated value zero; no personal fields are sent.
+- Baseline: typecheck/lint, 206 unit tests and 120 browser tests passed (2 expected skips). S8 adds schema, date, estimate, escaping, failure-boundary, transport and environment tests; browser checks cover errors, stored success despite mail failure, bot handling, no-JS submission, WCAG 2.2 AA and 360px layout.
+- MemPalace MCP tools were unavailable; these records are the durable session memory.
+
+### Preview acceptance and production status
+
+- Commit `029963e` built successfully. The protected S8 preview passes all 22 sitemap URLs (200, one H1, canonical and noindex), form axe WCAG 2.2 AA and 360px overflow checks. Desktop/mobile form layouts were inspected.
+- An initial submission failed server configuration without a write/send: the stdin-added hash secret had a trailing newline. Storing the exact hex value via the non-interactive CLI value argument and redeploying fixed this. Do not append a newline to this secret.
+- Real submission KX-1006 stored on Neon dev with two travellers, November 2026 and USD 3,300. The reference matches the screen and both mail bodies/subjects. Resend delivered the traveller copy to support@veilcode.studio, but suppressed the operator copy to frank@veilcode.studio because its account-level suppression originated from a 27 July bounce. Known operator failure was recorded on that synthetic dev row. F20 requires mailbox confirmation before resetting that suppression/retrying.
+- `sent` in the app means Resend accepted the request, not that the recipient server delivered it. Async bounces/suppressions require Resend monitoring; delivery webhooks are future work. S8 acceptance requires checking actual Resend delivery, not only the row's send flags.
+- Dev migration is applied and tested. Main migration was attempted through the dedicated confirmation script but automatic approval review rejected execution before it ran, citing missing explicit user confirmation for the persistent production mutation. The main schema is unchanged; F21 records the pending confirmation and production secret setup.

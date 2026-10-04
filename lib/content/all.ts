@@ -2,6 +2,7 @@
 // Pages and components import from the specific lib/content modules, not from here.
 
 export { tours } from "@/content/tours";
+export { emails } from "@/content/emails";
 export { destinations } from "@/content/destinations";
 export { guides, guidesIndex } from "@/content/guides";
 export { gorillaPermitRows, permitTables } from "@/content/facts";

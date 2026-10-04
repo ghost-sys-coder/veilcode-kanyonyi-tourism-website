@@ -1,9 +1,9 @@
 # Handoff: Kanyonyi Expeditions showcase build
 
-**Updated:** Sunday 4 October 2026, through session S7, for the next coding agent.
+**Updated:** Sunday 4 October 2026, through S8 implementation and preview checks, for the next coding agent.
 **Deadline:** Friday 9 October 2026, hard stop (AGENTS.md section 0).
 
-**S6 update:** 4 October 2026, Codex. Merged into `master` as PR #6. **S7 update:** full homepage completed on `s7-home`, pending review/merge. MemPalace MCP tools were not available, so this document and the decision records carry the session notes.
+**S6 update:** 4 October 2026, Codex. Merged into `master` as PR #6. **S7 update:** full homepage completed on `s7-home`, merged in PR #7. MemPalace MCP tools were not available, so this document and the decision records carry the session notes.
 
 Read in this order before writing code:
 
@@ -18,8 +18,8 @@ Read in this order before writing code:
 
 ## 1. Where things stand
 
-Sessions S1 to S6 are done and merged into `master` (PRs #1 to #6, including the handoff PR).
-S7 is complete on `s7-home`: [draft PR #7](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/7). The configured Vercel preview built successfully for implementation commit `deafa8a`; preview protection requires Frank's Vercel login. An unauthenticated HTTP smoke check reached Vercel's login page, so it is not recorded as an application smoke pass.
+Sessions S1 to S7 are done and merged into `master` (PRs #1 to #7, including the handoff PR).
+S8 is implemented on `s8-enquiries`: [draft PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/8), commit `029963e`. The protected preview passes authenticated checks. KX-1006 is stored on dev and its support@ confirmation delivered, but Resend suppresses frank@ after a prior bounce. The approved main migration is still pending explicit confirmation required by automatic approval review.
 
 | Session | What it delivered |
 | --- | --- |
@@ -30,6 +30,7 @@ S7 is complete on `s7-home`: [draft PR #7](https://github.com/ghost-sys-coder/ve
 | S5 Tours | `/tours/[slug]` (6 prerendered pages) and `/tours` with URL filters (`features/tours/`), reusable content components |
 | S6 Pages | Destination hub and four parks, guides index and three guides, FAQ, about, demo booking terms/privacy, and an interim `/plan-your-trip` WhatsApp page |
 | S7 Home | Full ten-section homepage, trip finder, month bars, shared cards/permit table, demo review placeholder, FAQ and closing actions; year-aware future fee copy and listing badges |
+| S8 Enquiries (acceptance pending) | Full form and estimates, no-JS fallback, dev schema/storage, atomic rate limiting, escaped Resend emails and retention dry run; F20/F21 remain |
 
 **Pages that exist:** all 22 sitemap URLs, the 404 page, and `/styleguide` (development only). Home is complete; `/plan-your-trip` is a WhatsApp contact page until S8.
 **Pages still to complete:** enquiry form with storage/emails (S8). Its copy is already in `content/`.
@@ -104,7 +105,7 @@ npm run build
 | --- | --- | --- |
 | **S6: done** | Destinations, guides, FAQ, about and policies | `s6-pages`. All blocks, derived tours, allowed JSON-LD and demo variants implemented. See decisions 001/002/004 S6 notes and plan gaps G15–G17 |
 | **S7: done** | Full ten-section homepage | `s7-home`, pending review/merge. Trip finder, month bars, cards and demo content are verified. See decisions 001/002/004 S7 notes and G18 |
-| **S8** | Enquiry flow, `/plan-your-trip` | Fully specified in decision 003 and `content/pages/plan-your-trip.ts` (field errors, placeholders, stepper labels, demo success state). Packages are already installed: zod, drizzle-orm, @neondatabase/serverless, drizzle-kit. Neon: `.env.local` is the `dev` branch and `.env` is `main`; migrate `dev` first. Resend is called over its REST API with `fetch` (no SDK), from `EMAIL_FROM` (`mail.veilcode.studio` is verified). Add `IP_HASH_SECRET` to `env.example`, `.env.local` and Vercel. Write `content/emails.ts` from 11-emails-and-meta.md (demo and live traveller emails, operator email) and add it to the verbatim test |
+| **S8: implemented, acceptance pending** | Enquiry flow, `/plan-your-trip` | `s8-enquiries`, draft PR #8. Full form, dev schema/migration, atomic rate limiting, estimates, both email variants and confirmations are implemented. Local tests pass (253 unit, 2 real DB, 142 browser; 2 expected skips). KX-1006 is stored in dev; support@ mail delivered, frank@ suppressed after a July bounce. F20/F21 block final acceptance/production readiness. See 003 S8 notes |
 | **S9** | Verification | Sitemap crawl test, axe on every template, Lighthouse, Schema validator, and a re-check of the yellow fever rule and UWA fees (12-fact-register.md) |
 | **S10** | Ship | Production env, production migration, deploy, smoke test, `docs/launch-notes.md` |
 
@@ -119,7 +120,7 @@ Cut order if time runs short: `docs/plan.md`, "What gets cut first".
   - `DATABASE_URL`, `DATABASE_URL_UNPOOLED`
   - `RESEND_API_KEY`, `EMAIL_FROM`, `ENQUIRY_NOTIFY_TO`, `EMAIL_REPLY_TO`
   - `NEXT_PUBLIC_GA_MEASUREMENT_ID`
-  - Still to add: `IP_HASH_SECRET`
+  - `IP_HASH_SECRET` added locally and as a branch-specific Sensitive S8 Preview value, without a trailing newline. Production setup awaits F21 confirmation
 - **Vercel:** project `veilcode-tourism`, live at `kanyonyi.veilcode.studio`. Preview uses Neon `dev`, Production uses `main`. Database values are marked Sensitive and can't be read back.
 - **Secrets:** never print or commit them, and never file them in MemPalace.
 
@@ -134,7 +135,9 @@ Cut order if time runs short: `docs/plan.md`, "What gets cut first".
 - F18: the GA ID is also set for Preview and in local `.env`, so test visits reach GA unless filtered.
 - G15–G17: closing copy reused from existing pages, interim enquiry-page copy, and the seasons guide's global fact stamp. No new wording was invented; review the choices in `docs/plan.md`.
 - G18: supply year-specific month notes and a weather-only green-season legend. For future years the homepage/listing use existing weather lines and the approved 2027 rates notice rather than unconfirmed 2026 discounts.
-- **S8 must replace the interim `/plan-your-trip` page.** There is no enquiry form, database write or confirmation email yet. The interim page deliberately omits the panel's form/confirmation promises.
+- **S8 acceptance:** `/plan-your-trip` now has the form, dev storage and two sends. On KX-1006 the traveller mail delivered; operator mail was suppressed by Resend. Confirm the frank@ mailbox now works before clearing its old bounce suppression (F20).
+- **Production:** reviewed main migration was rejected by automatic approval review pending explicit confirmation (F21). Do not merge S8 before main migration and production IP hash-secret setup are complete.
+- **Retention/monitoring:** schedule demo deletion before October 2027; `db:purge` defaults to dry run. App `sent` means accepted by Resend, not proven delivery; use Resend delivery logs as well as failed/pending rows until delivery webhooks/admin monitoring exist.
 
 ---
 

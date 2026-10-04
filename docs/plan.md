@@ -13,6 +13,8 @@ Status as of Sunday 4 October 2026, second review. Resolved items are listed at 
 | # | What | Blocks | By |
 | --- | --- | --- | --- |
 | F16 | Destinations hub "Map caption" with no map (G7). Caption is shown above the drive-time table; later copy gaps are listed below | None; fallback shipped | Wed |
+| F20 | Resend suppresses frank@veilcode.studio after a 27 July bounce. Confirm that mailbox works, then clear its old suppression and retry KX-1006 | S8 operator delivery acceptance | Before merge |
+| F21 | Explicit confirmation for the reviewed additive Neon main migration and production IP hash secret. Automatic approval review rejected the production mutation pending confirmation | Production readiness | Before merge / S10 |
 | F18 | **GA on Preview and local `.env`.** Still set there as of 4 Oct, so test visits reach GA unless the internal-traffic filter is on. Frank's call; no build impact | None | Any time |
 
 **Resolved on 4 October:** WhatsApp number (F1) · reference HTML path (F2) · Vercel and domain live (F3) · basic Consent Mode confirmed (F5) · photo sourcing, Unsplash/Pexels per 13-photo-brief.md (F7) · price model for 1 to 12 travellers (F8) · demo policy text (F9) · status colours (F11) · logo and favicon (F12) · DESIGN.md typo (F14) · AGENTS.md email address restored to frank@veilcode.studio (F17) · `/guides` index added to 06-guides.md (F15, C5) · Neon branches decided in AGENTS.md default 6 (F6) · `mail.veilcode.studio` verified in Resend (F4) · `DATABASE_URL_UNPOOLED` added (F13) · form placeholders, stepper labels, field errors, error summary and custom estimate added to 08-plan-your-trip.md (G1, G2, G3, G11) · MemPalace block restored in AGENTS.md section 38 (F19) · Neon `dev` branch created, `.env.local` points at it and both strings connect, Postgres 18 (4 Oct) · Resend vars added to Vercel Preview; Preview/Production DB strings confirmed by Frank (F18).
@@ -31,9 +33,13 @@ Per the brief, I'll use the nearest existing line and list each one here. Nothin
 | G13 | Home month picker legend | The copy's legend has three entries (Drier months, Green season, Short rains) but March's season is "Long rains begin" | March and October share the rains colour and the "Short rains" legend entry. Frank: add a legend label for March, or confirm |
 | G14 | Jinja tour card (shot 11) | The brief asks for a raft in white water; no free Unsplash photo of Nile rafting exists | A tour boat on the Nile at Jinja (the tour includes a source-of-the-Nile boat trip). Swap if Frank has a rafting photo |
 | G15 | FAQ and policy closing sections (S6) | No page-specific closing copy is provided, but 002 requires a next action | FAQ reuses the guides index's "Still have questions?" and WhatsApp action. Policies reuse about's "Ask us anything" body and "Plan my trip" |
-| G16 | Interim /plan-your-trip (S6) | The S6 sitemap criterion includes the S8 form route, but no temporary-page copy is supplied | Approved hero and contact/hours, plus the nearest existing demo/live reply line. Form-storage and confirmation-email promises are omitted until S8 replaces the interim page |
+| G16 (resolved S8) | Interim /plan-your-trip (S6) | The S6 sitemap criterion includes the S8 form route, but no temporary-page copy is supplied | Approved hero and contact/hours, plus the nearest existing demo/live reply line. Form-storage and confirmation-email promises are omitted until S8 replaces the interim page |
 | G17 | Best-time guide closing stamp (S6) | It repeats permit fees but has no dedicated stamp block | Uses the approved global fact stamp from 02-global.md through optional `Guide.factStamp` |
 | G18 | Rolling homepage month choices (S7) | April/May/November notes and the green-season legend mention discounted permits, confirmed only for 2026, but the next 12 months reach 2027 | For 2027 and later, use the approved weather-only lines: April "The wettest month in most parks.", May "Forest trails can be muddy; good boots and a porter matter more now.", November "Good for birding." Show the existing "Travelling in 2027?" notice. The listing uses the same fallback and limits cheaper-permit badges to 2026. The approved legend remains unchanged; Frank should supply year-specific notes and a weather-only legend |
+
+| G19 | Operator From name | Decision 003 says "Kanyonyi enquiries", absent from approved copy | Use the approved "Kanyonyi Expeditions" name for the operator notification |
+| G20 | Enquiry estimates beyond 2026 | The 18-month picker extends beyond the cost inputs' confirmed dates | Keep the exact approved 2026 standard-season estimate note; the quote confirms the actual price. Frank should supply later-year estimate copy/rates |
+| G21 | Form bounds and invalid optional choices | Dedicated maximum-length / invalid-choice errors are absent for names, notes, flexibility and under-15 | Reuse the existing name/email/phone errors or the approved generic "Please add your {field}." line with the field label. Frank should approve specific bound/choice errors |
 
 ## Conflicts found, with proposed resolutions
 
@@ -116,13 +122,20 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 - The header is opaque for contrast over the dark band. Display XL retains 44–96px but grows more gradually for the full approved H1; both changes are recorded in 004. Playwright output/report folders are ignored by ESLint to avoid a generated-directory scan race
 - MemPalace MCP tools remain unavailable; documentation carries the session record. S8 is next and must replace the interim enquiry contact page
 
-**S8. Enquiries (Phase 05)**
+**S8. Enquiries (Phase 05)**: implementation complete 4 October 2026, branch `s8-enquiries`; operator delivery acceptance pending
 - Replace S6's interim `/plan-your-trip` WhatsApp contact page with the form and full side panel. The interim `interimBody` content can then be removed
 - Drizzle schema, first migration, `npm run db:migrate` against the Neon dev branch, then production
 - Zod schema, `submit-enquiry` action, repository, rate limit, honeypot, `services/email/resend.ts`, the email builders (demo and live traveller versions, operator notification), the 04-tours.md price model estimate, `db:purge` script
 - `/plan-your-trip`: form, side panel, live estimate, success state, every error state, `?tour=` preselect, `start_enquiry` and `submit_enquiry`
 - Unit tests: schema, estimate, reference format, reply-by date (EAT working days), email builders (escaping)
 - *Done when:* a real submission from the preview deploy stores a row, both emails arrive (traveller and frank@), and the reference matches across the screen, both emails and the database
+- Implemented: full form, demo/live side panel and confirmations, authoritative Zod validation, standard-price/currency estimate, atomic three-per-ten-minute rate limit, honeypot, sequence references, escaped HTML/plain text and two independent Resend sends. No dependency added
+- Verified locally: typegen/typecheck/lint and production build; 253 unit tests, 2 real dev-database integration tests and 142 Playwright tests pass (2 expected skips). The final token/stamp adjustment passes all 22 enquiry tests on mobile and desktop. No-JavaScript submission, network/storage/rate/mail failures, bot handling, PII-free analytics, axe and 360px wrapping are covered
+- Dev migration applied; fixture rows removed; retention dry run reports zero eligible rows. Schedule production retention before October 2027 and monitor failed/pending email-status rows manually
+- Real preview: [draft PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/8), commit `029963e`, [protected preview](https://veilcode-tourism-git-s8-enquiries-ghostsyscoders-projects.vercel.app). KX-1006 is saved on Neon dev with the correct USD 3,300 estimate; its reference matches the screen and both email bodies/subjects. support@ confirmation delivered. frank@ notification suppressed by Resend after a July bounce (F20); known failure recorded on the dev test row. S8 is not marked done until both arrive
+- Preview additionally passes the real 22-route sitemap crawl, form axe WCAG 2.2 AA and 360px overflow check. The first submission failed configuration before storage/mail because stdin supplied a trailing newline in the hash secret; the newline-free secret and redeploy resolved it
+- Main migration has not run: automatic approval review requires explicit production confirmation (F21). The reviewed script/SQL are ready; production hash-secret setup remains pending. Local development continues to use dev
+- MemPalace MCP tools remain unavailable; decision 003 and handoff carry the session record. No diary results were invented
 
 ### Friday 9 October (ship day)
 

@@ -399,3 +399,8 @@ The homepage reads three columns and the permit guide reads four, both from thes
 - **MDX for guides:** four extra dependencies and Turbopack loader configuration, for three pages. Rejected.
 - **JSON files with Zod validation at build:** this gives runtime validation but loses literal slug unions and `StaticImageData` imports. TypeScript `satisfies` gives the same checking at compile time. Rejected.
 - **Content in Neon now:** the brief says files until the operator needs to edit. Rejected.
+
+### Enquiry content implementation (S8, 4 October 2026)
+
+- Removed `planYourTrip.interimBody` when the full form replaced the temporary contact page. `content/emails.ts` and `lib/content/emails.ts` hold all approved confirmation and operator-notification wording. The verbatim test now includes emails and preserves the explicitly approved conditional under-15 suffix and quoted WhatsApp fallback within copy-deck placeholders.
+- The month builder accepts a count (default 12 for home, 18 for enquiries), retaining Kampala calendar boundaries. No tourism inventory was added. See G19?G21 for approved-copy fallbacks.

@@ -27,6 +27,7 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     // A previous next start can retain an old build on Windows; always test a fresh build.
     reuseExistingServer: false,
+    env: { ENQUIRY_TEST_MODE: "true" },
     timeout: 240_000,
   },
 });

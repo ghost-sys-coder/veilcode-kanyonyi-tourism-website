@@ -15,6 +15,8 @@ function normalise(text: string): string {
     .replace(/\r\n/g, "\n")
     .replace(/\*\*|`/g, "")
     .replace(/ †/g, "") // fact-register markers in 09-faq.md; stored as usesRegisteredFact
+    .replace(/\{, including someone under 15 if yes\}/g, ", including someone under 15")
+    .replace(/\{whatsapp or "not given"\}/g, '{} or "not given"') // approved fallback inside a placeholder
     .replace(/\{[^}]*\}/g, "{}") // placeholder names differ ({first name} vs {firstName})
     .replace(/(^|[\s(])\*(?=\S)|(?<=\S)\*(?=[\s).,:;?]|$)/gm, "$1")
     .replace(/\s+/g, " ")
