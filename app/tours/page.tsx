@@ -34,6 +34,7 @@ export default function ToursPage() {
     card: <TripCard tour={tour} list="tours" headingLevel="h2" />,
   }));
   const monthNotes = Object.fromEntries(getMonthNotes().map((m) => [m.month, m.note]));
+  const futureMonthNotes = Object.fromEntries(getMonthNotes().map((m) => [m.month, m.futureNote ?? m.note]));
 
   // Before the URL is read (and for crawlers), every card in recommended order.
   const allCards = (
@@ -57,7 +58,7 @@ export default function ToursPage() {
 
       <Section className="flex flex-col gap-8 pt-0 md:pt-0">
         <Suspense fallback={allCards}>
-          <TourResults items={items} monthNotes={monthNotes} />
+          <TourResults items={items} monthNotes={monthNotes} futureMonthNotes={futureMonthNotes} />
         </Suspense>
         <p className="measure text-body-s text-muted-foreground">{toursListing.priceNote}</p>
         <Alert className="max-w-3xl border-warning bg-warning-surface text-warning">

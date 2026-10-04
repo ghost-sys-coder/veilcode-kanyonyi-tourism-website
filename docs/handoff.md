@@ -1,9 +1,9 @@
 # Handoff: Kanyonyi Expeditions showcase build
 
-**Written:** Sunday 4 October 2026, at the end of session S5, for the next coding agent.
+**Updated:** Sunday 4 October 2026, through session S7, for the next coding agent.
 **Deadline:** Friday 9 October 2026, hard stop (AGENTS.md section 0).
 
-**S6 update:** 4 October 2026, Codex. Completed on branch `s6-pages`; merge is still to be reviewed. MemPalace MCP tools were not available, so this document and the decision records carry the session notes.
+**S6 update:** 4 October 2026, Codex. Merged into `master` as PR #6. **S7 update:** full homepage completed on `s7-home`, pending review/merge. MemPalace MCP tools were not available, so this document and the decision records carry the session notes.
 
 Read in this order before writing code:
 
@@ -18,8 +18,8 @@ Read in this order before writing code:
 
 ## 1. Where things stand
 
-Sessions S1 to S5 are done and merged into `master` (PRs #1 to #4).
-S6 is complete on `s6-pages`.
+Sessions S1 to S6 are done and merged into `master` (PRs #1 to #6, including the handoff PR).
+S7 is complete on `s7-home`: [draft PR #7](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/7). The configured Vercel preview built successfully for implementation commit `deafa8a`; preview protection requires Frank's Vercel login. An unauthenticated HTTP smoke check reached Vercel's login page, so it is not recorded as an application smoke pass.
 
 | Session | What it delivered |
 | --- | --- |
@@ -29,11 +29,12 @@ S6 is complete on `s6-pages`.
 | S4 Photos | 15 Unsplash photos in `public/images/` with credits in `content/media.ts`, Open Graph crops, `components/media/site-image.tsx` |
 | S5 Tours | `/tours/[slug]` (6 prerendered pages) and `/tours` with URL filters (`features/tours/`), reusable content components |
 | S6 Pages | Destination hub and four parks, guides index and three guides, FAQ, about, demo booking terms/privacy, and an interim `/plan-your-trip` WhatsApp page |
+| S7 Home | Full ten-section homepage, trip finder, month bars, shared cards/permit table, demo review placeholder, FAQ and closing actions; year-aware future fee copy and listing badges |
 
-**Pages that exist:** all 22 sitemap URLs, the 404 page, and `/styleguide` (development only). `/` still has the interim hero; `/plan-your-trip` is a WhatsApp contact page until S8.
-**Pages still to complete:** full homepage (S7) and enquiry form with storage/emails (S8). All of their copy is already in `content/`.
+**Pages that exist:** all 22 sitemap URLs, the 404 page, and `/styleguide` (development only). Home is complete; `/plan-your-trip` is a WhatsApp contact page until S8.
+**Pages still to complete:** enquiry form with storage/emails (S8). Its copy is already in `content/`.
 
-**Checks after S6:** typecheck and lint clean, 203 Vitest tests, 104 Playwright tests (2 skips by design). All 22 sitemap URLs pass the crawl; every new route passes axe WCAG 2.2 AA and the 360px overflow check.
+**Checks after S7:** typegen/typecheck, lint and production build clean, 206 Vitest tests, 120 Playwright tests (2 skips by design). All 22 sitemap URLs pass the crawl. Home passes axe and the 360px overflow check; hero image is the measured LCP element on both profiles and initial CLS is at most 0.01.
 
 ---
 
@@ -79,6 +80,7 @@ npm run build
 - **Sun (yellow) is the single main action per viewport.** Home: "Find trips". Tour pages: "Ask about this trip". Enquiry page: "Send enquiry". The header's "Plan my trip" and the WhatsApp button are forest green.
 - **Prices:** use `<Price usd={n} />`. It renders both USD and UGX, and CSS shows the active one. Money formats are in `lib/content/money.ts`.
 - **Images:** go through `<SiteImage media={{ id }} preset="hero|card|inline" />`. Pass `sizes` when the image sits in a narrower column than its preset.
+- **S7 hero:** display-xl remains 44–96px but now reaches its maximum at 1920px, to fit the approved long heading beside the photo. The header is opaque: translucent light ground failed contrast over the dark seasons band.
 - **Breadcrumbs and JSON-LD:** `<SiteBreadcrumb trail=[...] />` emits the matching JSON-LD. Builders live in `lib/seo/schema.ts`. Never emit Offer, Review, AggregateRating, LocalBusiness (including TravelAgency), PostalAddress or Person; a test checks this.
 - **Page metadata:** `export const metadata = pageMetadata("/path", { image })` from `lib/seo/page-metadata.ts`. Every route needs an entry in `content/meta.ts`; the sitemap is built from it.
 - **Analytics:** `track()` from `lib/analytics/track.ts`, with event names only from `lib/analytics/events.ts` (AGENTS.md section 25). `TrackView` and `TrackLink` live in `components/analytics/`.
@@ -90,6 +92,9 @@ npm run build
 - **S6 additions:** `ContentTable`, `PermitTable` (guide/home columns), `BackToTop`, destination/guide cards, and `features/guides/components/guide-block.tsx` (all block types). `CloseCta` accepts an optional `secondary` node. New pages read approved copy through `lib/content/pages.ts` and permit data through `lib/content/facts.ts`.
 - **Test server:** Playwright now uses `reuseExistingServer: false` to prevent testing a stale production build. Stop any test server left on port 3100 before running the suite. In the restricted Codex shell, process teardown needed an escalated test run; Frank's ordinary shell should not have that restriction.
 - **About client swap:** fill `about.team.liveMembers` and `about.licences.live` with real client details. Sample identities are selected only in demo mode.
+- **S7 months:** `features/home/lib/travel-months.ts` returns twelve months using Kampala time; home revalidates daily. Month links and the finder use the existing tours query helpers. `MonthNote.futureNote` contains approved weather-only fallbacks for 2027 and later; cheaper-permit badges are restricted to the confirmed 2026 promotion. See G18.
+- **Open Select axe:** exclude only `[data-base-ui-focus-guard]` for the installed Base UI's intentionally hidden focus redirectors; actual options/triggers stay audited. Keyboard focus restoration/Tab order is tested. Closed-page audits have no exclusion.
+- **Lint:** generated `test-results/` and `playwright-report/` are ignored, avoiding a race when Playwright replaces them during lint.
 
 ---
 
@@ -98,7 +103,7 @@ npm run build
 | Session | Scope | Notes |
 | --- | --- | --- |
 | **S6: done** | Destinations, guides, FAQ, about and policies | `s6-pages`. All blocks, derived tours, allowed JSON-LD and demo variants implemented. See decisions 001/002/004 S6 notes and plan gaps G15–G17 |
-| **S7** | Full homepage (`content/pages/home.ts`, 10 sections) | Trip finder (Experience, Month as the next 12 months, Length; "Find trips" is sun) goes to `/tours?experience=&month=YYYY-MM&length=` and fires `tour_search`. Reuse `parseFilters`/`toQueryString` from `features/tours/lib/filters.ts`. Month picker is a ToggleGroup of 12 bars coloured by `seasons.ts` `kind` (gap G13). Permit table from `content/facts.ts` (home columns). Set `revalidate = 86400` so the finder's month list rolls daily |
+| **S7: done** | Full ten-section homepage | `s7-home`, pending review/merge. Trip finder, month bars, cards and demo content are verified. See decisions 001/002/004 S7 notes and G18 |
 | **S8** | Enquiry flow, `/plan-your-trip` | Fully specified in decision 003 and `content/pages/plan-your-trip.ts` (field errors, placeholders, stepper labels, demo success state). Packages are already installed: zod, drizzle-orm, @neondatabase/serverless, drizzle-kit. Neon: `.env.local` is the `dev` branch and `.env` is `main`; migrate `dev` first. Resend is called over its REST API with `fetch` (no SDK), from `EMAIL_FROM` (`mail.veilcode.studio` is verified). Add `IP_HASH_SECRET` to `env.example`, `.env.local` and Vercel. Write `content/emails.ts` from 11-emails-and-meta.md (demo and live traveller emails, operator email) and add it to the verbatim test |
 | **S9** | Verification | Sitemap crawl test, axe on every template, Lighthouse, Schema validator, and a re-check of the yellow fever rule and UWA fees (12-fact-register.md) |
 | **S10** | Ship | Production env, production migration, deploy, smoke test, `docs/launch-notes.md` |
@@ -128,6 +133,7 @@ Cut order if time runs short: `docs/plan.md`, "What gets cut first".
 - G14: no free Nile rafting photo exists; the Jinja card shows a Nile tour boat.
 - F18: the GA ID is also set for Preview and in local `.env`, so test visits reach GA unless filtered.
 - G15–G17: closing copy reused from existing pages, interim enquiry-page copy, and the seasons guide's global fact stamp. No new wording was invented; review the choices in `docs/plan.md`.
+- G18: supply year-specific month notes and a weather-only green-season legend. For future years the homepage/listing use existing weather lines and the approved 2027 rates notice rather than unconfirmed 2026 discounts.
 - **S8 must replace the interim `/plan-your-trip` page.** There is no enquiry form, database write or confirmation email yet. The interim page deliberately omits the panel's form/confirmation promises.
 
 ---

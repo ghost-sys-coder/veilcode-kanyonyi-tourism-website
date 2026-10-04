@@ -30,7 +30,7 @@ export interface ResultItem {
  * HTML holds every card in recommended order (Suspense fallback), so all tours stay crawlable;
  * filtered URLs canonicalise to /tours (002 section 4).
  */
-export function TourResults({ items, monthNotes }: { items: ResultItem[]; monthNotes: Record<number, string> }) {
+export function TourResults({ items, monthNotes, futureMonthNotes }: { items: ResultItem[]; monthNotes: Record<number, string>; futureMonthNotes: Record<number, string> }) {
   const router = useRouter();
   const filters = parseFilters(useSearchParams());
   const cards = new Map(items.map((item) => [item.data.slug, item.card]));
@@ -68,7 +68,7 @@ export function TourResults({ items, monthNotes }: { items: ResultItem[]; monthN
         <p className="measure rounded-lg border bg-card p-4">
           {fill(ui.tripFinder.resultsNote, {
             month: filters.month.label.split(" ")[0],
-            note: monthNotes[filters.month.month],
+            note: (filters.month.value.slice(0, 4) >= "2027" ? futureMonthNotes : monthNotes)[filters.month.month],
           })}
         </p>
       ) : null}

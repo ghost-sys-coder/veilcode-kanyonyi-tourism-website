@@ -52,8 +52,9 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
 
-  /* Type scale (DESIGN.md section 3), fluid between 360px and 1180px viewports */
-  --text-display-xl: clamp(2.75rem, 1.53rem + 5.37vw, 6rem);
+  /* Type scale (DESIGN.md section 3). Display XL grows to 96px at 1920px so the approved
+     long homepage heading fits its split layout; other scales reach desktop size at 1180px. */
+  --text-display-xl: clamp(2.75rem, 5vw, 6rem);
   --text-display-xl--line-height: 1.02;
   --text-display-l: clamp(1.875rem, 1.38rem + 2.2vw, 3rem);
   --text-display-l--line-height: 1.08;

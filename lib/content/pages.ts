@@ -1,4 +1,6 @@
 // Read layer for approved page copy and shared interface labels.
+export { home } from "@/content/pages/home";
+export { toursListing } from "@/content/pages/tours-listing";
 export { destinationsHub } from "@/content/pages/destinations-hub";
 export { destinationPage } from "@/content/pages/destination-page";
 export { guidePage } from "@/content/pages/guide-page";

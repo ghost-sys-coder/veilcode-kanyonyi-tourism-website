@@ -8,7 +8,7 @@ import type { MonthNumber, TourCategory } from "@/types/content";
 //   experience  filters by category
 //   length      3 | 5 | 7 | 8plus  (up to N days, or more than a week)
 //   month       YYYY-MM: never removes tours; adds "Good in {Month}" (sorted first) and, in April,
-//               May and November, "Cheaper permits" on gorilla and chimp tours
+//               May and November 2026, "Cheaper permits" on gorilla and chimp tours
 //   sort        recommended | shortest | longest | price
 // Pure functions, shared by the listing and the home trip finder, and unit-tested.
 
@@ -103,7 +103,8 @@ export function applyFilters(tours: readonly FilterableTour[], filters: TourFilt
     .map((t) => ({
       ...t,
       goodInMonth: month !== undefined && t.bestMonths.includes(month),
-      cheaperPermits: month !== undefined && isLowSeasonMonth(month) && t.includesPrimatePermits,
+      // The fact register only confirms discounted permits for these months in 2026.
+      cheaperPermits: month !== undefined && filters.month?.value.startsWith("2026-") === true && isLowSeasonMonth(month) && t.includesPrimatePermits,
     }))
     .sort((a, b) => Number(b.goodInMonth) - Number(a.goodInMonth) || SORTERS[filters.sort](a, b));
 }
