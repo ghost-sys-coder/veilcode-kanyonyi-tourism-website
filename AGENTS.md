@@ -1306,7 +1306,7 @@ Do not use MemPalace as an excuse to avoid documentation.
    - SEO and rendering: `rendering`, `indexing`, `structured_data`, `llms_txt`
    - Enquiries: `enquiry_submit`, `enquiry_storage`, `enquiry_reference`, `enquiry_email`, `rate_limit`, `demo_retention`, `neon_branches`
    - Design system: `shadcn`, `sun_cta`, `design_tokens`, `layout_patterns`, `whatsapp_fab`
-   - Other: `analytics`, `dependencies`
+   - Other: `analytics`, `dependencies`, `photography`
 2. **When a decision changes:** update the decision record in `docs/decisions/` (or `docs/plan.md`) first, because it is the source of truth. Then run `mempalace_kg_invalidate` on the old fact (with `ended` set to the date) and `mempalace_kg_add` for the new one (with `valid_from` set to the date and `source_file` pointing at the record). Facts are at most 128 characters; split longer ones into several facts on the same subject.
 3. **When an open question is answered:** invalidate the `open_question` fact and add a `decided` fact.
 4. **End:** run `mempalace_diary_write` with agent `claude-code`, wing `kanyonyi`, and topic set to the session (`s1-foundation`, `s2-shell`, …). Record what shipped, what was cut, new open questions and anything the next session must know.

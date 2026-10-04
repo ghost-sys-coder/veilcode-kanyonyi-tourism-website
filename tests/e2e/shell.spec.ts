@@ -143,3 +143,21 @@ test.describe("SEO files", () => {
     expect(types).toEqual(expect.arrayContaining(["Organization", "WebSite"]));
   });
 });
+
+test.describe("photography", () => {
+  test("home hero is optimised, described and shared", async ({ page }) => {
+    await page.goto("/");
+    const hero = page.getByRole("img", { name: /silverback mountain gorilla/i });
+    await expect(hero).toBeVisible();
+    const src = await hero.evaluate((img: HTMLImageElement) => img.currentSrc);
+    expect(src).toContain("/_next/image");
+    const res = await page.request.get(src);
+    expect(res.ok()).toBe(true);
+    // Never wider than it renders: the served file is at most twice the displayed width (2x screens).
+    const { rendered, natural } = await hero.evaluate((img: HTMLImageElement) => ({ rendered: img.clientWidth, natural: img.naturalWidth }));
+    expect(natural).toBeLessThanOrEqual(rendered * 2 + 64);
+    expect((await res.body()).length).toBeLessThan(250 * 1024);
+    const og = await page.locator('meta[property="og:image"]').getAttribute("content");
+    expect(og).toMatch(/^https?:\/\/.+\.jpg$/);
+  });
+});

@@ -29,6 +29,7 @@ Per the brief, I'll use the nearest existing line and list each one here. Nothin
 | G9 | Destination closing body for Kibale, Queen Elizabeth, Murchison | Heading and button only in the copy | Rendered without a body (fine if intended) |
 | G12 | Operator notification in demo mode | The copy has one version only | Same email in both modes (it only goes to frank@) |
 | G13 | Home month picker legend | The copy's legend has three entries (Drier months, Green season, Short rains) but March's season is "Long rains begin" | March and October share the rains colour and the "Short rains" legend entry. Frank: add a legend label for March, or confirm |
+| G14 | Jinja tour card (shot 11) | The brief asks for a raft in white water; no free Unsplash photo of Nile rafting exists | A tour boat on the Nile at Jinja (the tour includes a source-of-the-Nile boat trip). Swap if Frank has a rafting photo |
 
 ## Conflicts found, with proposed resolutions
 
@@ -74,7 +75,7 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 - Content integrity tests (001 section 5): slugs, refs, prices, derived tour lists, meta lengths, banned phrases, em dashes, `[CLIENT:` leakage
 - *Done when:* `npm test` passes with all content present
 
-**S4. Photography and media**
+**S4. Photography and media**: done 4 October 2026, branch `s4-photos`
 - Source shots 1 to 11 and 24 to 27 from 13-photo-brief.md, following its subject rules, alt and caption patterns. Record attribution, process with `sharp` (max 2400px, OG crops), and fill in `content/media.ts`. Lift the bird mark SVG from the reference file for the logo and favicon
 - `site-image.tsx` with size presets, plus caption and credit rendering
 - *Done when:* every `MediaRef` resolves and card images are under 200 KB

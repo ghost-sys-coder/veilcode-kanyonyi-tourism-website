@@ -282,6 +282,13 @@ AGENTS.md section 0 lists the Base UI differences. These are the places they app
 - **Consent is basic mode:** gtag.js is only requested after "Accept analytics". Withdrawing consent reloads the page, because gtag can't be unloaded. A Playwright test confirms no request reaches googletagmanager.com after "Reject".
 - **External state uses `useSyncExternalStore`** (`hooks/use-consent.ts`, `hooks/use-currency.ts`), not effects that set state; the React lint rules reject the latter.
 
+### 12. Photography (S4, 4 October 2026)
+
+- **Sourcing.** Unsplash's search API now needs a key and Pexels blocks automated requests, so photos were found through Unsplash search pages and downloaded from its image CDN. Each photo's page was checked for location, photographer and licence; all 15 are under the free Unsplash License (Unsplash+ excluded). Twelve were taken in Uganda, most in the park they illustrate. The about-page vehicle was photographed in Akagera, Rwanda, and the boots have no stated location, so their alt text names no Ugandan place.
+- **Processing.** Files are re-encoded with sharp at 2400px wide, quality 80 (mozjpeg), with metadata stripped, plus 1200 × 630 Open Graph crops in `public/images/og/`. The Kibale chimp (a portrait original) and the Ishasha lions were cropped by hand to keep the subject in frame.
+- **`site-image.tsx`** wraps `next/image` with `hero`, `card` and `inline` size presets, a blur placeholder, the photo brief's `--muted` placeholder for unsourced images, and an optional caption with the "Photo: {photographer} / Unsplash" credit. A `sizes` override exists for images in narrower columns than their preset assumes; the interim homepage needed it.
+- **Open Graph.** `pageMetadata(path, { image })` uses the page's crop and falls back to the home hero.
+
 ## Consequences
 
 - shadcn component files will differ from upstream in their class strings. Re-running `shadcn add --overwrite` on them would lose the brand changes. Note this in each file with a one-line comment at the top.
