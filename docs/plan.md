@@ -105,6 +105,7 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 ### Thursday 8 October
 
 **S7. Homepage (Phase 02)**: done 4 October 2026, branch `s7-home`
+- Review: [draft PR #7](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/7). Vercel built commit `deafa8a` successfully; its preview requires Vercel login, so the unauthenticated smoke request reached the login page rather than the app
 - Hero (photo, `priority`), trip finder (`tour_search` → `/tours?…`), four promises, signature trips, permit section, month picker, destinations, how booking works, reviews placeholder, three questions, closing CTA
 - Currency toggle with no flash on load
 - *Done when:* home LCP is the hero image, there's no layout shift from fonts or images, and the sun rule holds (C1)

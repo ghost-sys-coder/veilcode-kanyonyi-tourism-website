@@ -19,7 +19,7 @@ Read in this order before writing code:
 ## 1. Where things stand
 
 Sessions S1 to S6 are done and merged into `master` (PRs #1 to #6, including the handoff PR).
-S7 is complete on `s7-home`.
+S7 is complete on `s7-home`: [draft PR #7](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/7). The configured Vercel preview built successfully for implementation commit `deafa8a`; preview protection requires Frank's Vercel login. An unauthenticated HTTP smoke check reached Vercel's login page, so it is not recorded as an application smoke pass.
 
 | Session | What it delivered |
 | --- | --- |
