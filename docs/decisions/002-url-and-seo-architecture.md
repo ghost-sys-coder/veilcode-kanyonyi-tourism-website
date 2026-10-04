@@ -185,6 +185,13 @@ FAQ rich results are now limited to authoritative government and health sites, s
 
 ## Consequences
 
+### Homepage implementation (S7, 4 October 2026)
+
+- The trip finder uses `parseFilters`/`toQueryString` and navigates to the existing `/tours` query contract. A submit sends one `tour_search` event. Month links use the corresponding date in the rolling twelve-month list; filtered pages retain the `/tours` canonical.
+- The future-year month list exposed an existing factual mismatch: cheaper-permit badges and notes previously extended the confirmed 2026 promotion into every year. Badges are now limited to April, May and November **2026**; future notes use the approved weather-only fallback (plan G18), with the existing 2027 rates notice. Month still never removes a tour.
+- Home links to all six tours, all four parks, the permit and seasons guides, FAQ and enquiry. Its visible demo reviews remain a placeholder. The root Organization/WebSite schema is retained; no review, rating, offer or extra home-specific schema is added.
+
+
 - Moving to a client domain means changing `NEXT_PUBLIC_SITE_URL` and setting `NEXT_PUBLIC_DEMO_MODE=false`. No code changes. `NEXT_PUBLIC_*` values are inlined at build time, so either change needs a redeploy.
 - The noindex default is fail-safe. If someone forgets an env var, the site stays out of search rather than leaking into it.
 - Tours can't win price rich results on the demo. That is by design.

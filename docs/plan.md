@@ -12,7 +12,7 @@ Status as of Sunday 4 October 2026, second review. Resolved items are listed at 
 
 | # | What | Blocks | By |
 | --- | --- | --- | --- |
-| F16 | **Copy gap G7 is the only one left:** the destinations hub "Map caption" with no map. Default: show the caption above the drive-time table | Hub (S6) | Wed |
+| F16 | Destinations hub "Map caption" with no map (G7). Caption is shown above the drive-time table; later copy gaps are listed below | None; fallback shipped | Wed |
 | F18 | **GA on Preview and local `.env`.** Still set there as of 4 Oct, so test visits reach GA unless the internal-traffic filter is on. Frank's call; no build impact | None | Any time |
 
 **Resolved on 4 October:** WhatsApp number (F1) · reference HTML path (F2) · Vercel and domain live (F3) · basic Consent Mode confirmed (F5) · photo sourcing, Unsplash/Pexels per 13-photo-brief.md (F7) · price model for 1 to 12 travellers (F8) · demo policy text (F9) · status colours (F11) · logo and favicon (F12) · DESIGN.md typo (F14) · AGENTS.md email address restored to frank@veilcode.studio (F17) · `/guides` index added to 06-guides.md (F15, C5) · Neon branches decided in AGENTS.md default 6 (F6) · `mail.veilcode.studio` verified in Resend (F4) · `DATABASE_URL_UNPOOLED` added (F13) · form placeholders, stepper labels, field errors, error summary and custom estimate added to 08-plan-your-trip.md (G1, G2, G3, G11) · MemPalace block restored in AGENTS.md section 38 (F19) · Neon `dev` branch created, `.env.local` points at it and both strings connect, Postgres 18 (4 Oct) · Resend vars added to Vercel Preview; Preview/Production DB strings confirmed by Frank (F18).
@@ -33,6 +33,7 @@ Per the brief, I'll use the nearest existing line and list each one here. Nothin
 | G15 | FAQ and policy closing sections (S6) | No page-specific closing copy is provided, but 002 requires a next action | FAQ reuses the guides index's "Still have questions?" and WhatsApp action. Policies reuse about's "Ask us anything" body and "Plan my trip" |
 | G16 | Interim /plan-your-trip (S6) | The S6 sitemap criterion includes the S8 form route, but no temporary-page copy is supplied | Approved hero and contact/hours, plus the nearest existing demo/live reply line. Form-storage and confirmation-email promises are omitted until S8 replaces the interim page |
 | G17 | Best-time guide closing stamp (S6) | It repeats permit fees but has no dedicated stamp block | Uses the approved global fact stamp from 02-global.md through optional `Guide.factStamp` |
+| G18 | Rolling homepage month choices (S7) | April/May/November notes and the green-season legend mention discounted permits, confirmed only for 2026, but the next 12 months reach 2027 | For 2027 and later, use the approved weather-only lines: April "The wettest month in most parks.", May "Forest trails can be muddy; good boots and a porter matter more now.", November "Good for birding." Show the existing "Travelling in 2027?" notice. The listing uses the same fallback and limits cheaper-permit badges to 2026. The approved legend remains unchanged; Frank should supply year-specific notes and a weather-only legend |
 
 ## Conflicts found, with proposed resolutions
 
@@ -103,10 +104,16 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 
 ### Thursday 8 October
 
-**S7. Homepage (Phase 02)**
+**S7. Homepage (Phase 02)**: done 4 October 2026, branch `s7-home`
 - Hero (photo, `priority`), trip finder (`tour_search` → `/tours?…`), four promises, signature trips, permit section, month picker, destinations, how booking works, reviews placeholder, three questions, closing CTA
 - Currency toggle with no flash on load
 - *Done when:* home LCP is the hero image, there's no layout shift from fonts or images, and the sun rule holds (C1)
+- Delivered all ten sections from approved content, a Base UI trip finder with `tour_search`, keyboard month bars, six signature trips, four park cards, permit fees/stamps, booking steps, demo-only review placeholder, FAQ and closing actions
+- Verified in production: hero image is the LCP element on mobile and desktop; initial CLS is at most 0.01; only one sun action is visible in the tested viewports. Home passes axe WCAG 2.2 AA and no overflow at 360px. Open-select scans exclude only Base UI's invisible focus redirectors; all real controls/options are audited and Escape/Tab focus is tested (004 S7 notes)
+- Typegen, typecheck, lint and production build pass. 206 Vitest tests and 120 Playwright tests pass (2 expected skips); all 22 sitemap URLs still pass the crawl. Desktop and 360px hero/month layouts were inspected
+- G13 remains; G18 records future-year weather/fee copy fallbacks. Fixed the listing's unconfirmed future discount badges/notes while preserving its filters and canonical
+- The header is opaque for contrast over the dark band. Display XL retains 44–96px but grows more gradually for the full approved H1; both changes are recorded in 004. Playwright output/report folders are ignored by ESLint to avoid a generated-directory scan race
+- MemPalace MCP tools remain unavailable; documentation carries the session record. S8 is next and must replace the interim enquiry contact page
 
 **S8. Enquiries (Phase 05)**
 - Replace S6's interim `/plan-your-trip` WhatsApp contact page with the form and full side panel. The interim `interimBody` content can then be removed

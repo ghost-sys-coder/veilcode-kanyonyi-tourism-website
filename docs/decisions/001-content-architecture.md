@@ -382,6 +382,14 @@ The homepage reads three columns and the permit guide reads four, both from thes
 
 ## Consequences
 
+### Homepage implementation (S7, 4 October 2026)
+
+- The homepage composes ten section components from the approved `home` object through `lib/content/pages.ts`. Cards, permit fees, seasonal notes and interface labels retain their existing content sources. No marketing copy was rewritten.
+- `getTravelMonths(now)` supplies the current month and following eleven using `Africa/Kampala`, including year boundaries. The server passes the same serialisable list to the trip finder and month picker; home revalidates daily (`86400`).
+- `MonthNote.futureNote` holds the nearest approved weather-only lines for April, May and November when their linked travel date is in 2027 or later (G18). The existing 2027 rates notice accompanies those choices. The tours listing consumes the same fallback; the original 2026 notes remain verbatim.
+- The reviews section uses `pickVariant`: the honest placeholder is demo only; the live variant is absent until genuine client reviews are supplied. No review identities or ratings are generated.
+
+
 - Content edits need a developer and a deploy. That is acceptable until an operator needs self-service editing, which is the CMS trigger named in the brief.
 - Prose that repeats a fact can drift. The integrity test reduces the risk but doesn't remove it.
 - The data model stays open to bookings later: `Tour.pricing.tiers` and `slug` are what an availability or booking table would reference.

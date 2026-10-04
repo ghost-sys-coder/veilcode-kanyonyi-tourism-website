@@ -300,6 +300,17 @@ AGENTS.md section 0 lists the Base UI differences. These are the places they app
 
 ## Consequences
 
+### Homepage implementation (S7, 4 October 2026)
+
+- Home follows the approved ten-section order, reusing `Section`, `TripCard`, `DestinationCard`, `PermitTable`, `FaqList`, `FactStamp` and `CloseCta`. `DestinationCard` accepts an H3 heading level on home; the hub keeps H2. `FactStamp` accepts a class override for contrast on the dark seasons band.
+- Trip finder: installed Base UI Select with explicit `items` and null empty values; real form submission; one sun button. Month picker: installed ToggleGroup with array values, six columns on phones and twelve on desktop. Every bar has the full month and season as its accessible name, and the selected note is a polite live region. Light focus rings on the dark band meet contrast; no upstream shadcn behaviour changed.
+- **Display XL fluid interpolation adjusted:** still 44–96px, now `clamp(2.75rem, 5vw, 6rem)` (96px at 1920px). The original interpolation reached 96px at 1180px and broke the full approved H1 into six tall lines in the split hero. The slower growth keeps that copy legible beside the photo without reducing the approved minimum/maximum or changing fonts. Other type tokens are unchanged.
+- The photo leads on mobile and aligns to the top of the desktop text column, uses the hero aspect presets and `priority`, with sizes matched to its wider column. Space is reserved before loading. Header and floating WhatsApp remain forest; only Find trips and the distant closing CTA are sun.
+- **Sticky header made opaque:** axe found the translucent background reduced the small logo subline's contrast when scrolling over the forest band. Using the existing background token fixes the real contrast failure.
+- Open-select axe scans exclude only `[data-base-ui-focus-guard]`: the installed Base UI `utils/FocusGuard.js` intentionally makes these invisible redirectors focusable and aria-hidden. No audit rule is disabled, and real triggers/options remain audited. Keyboard tests cover Escape returning focus and Tab reaching the next field. Closed-page audits retain the full document without that exclusion.
+- Final local browser checks identify the hero image as LCP on both profiles and initial CLS at most 0.01. Desktop and 360px hero/month layouts were inspected. ESLint now ignores generated Playwright result/report directories, preventing a scan race when the test runner replaces them.
+
+
 - shadcn component files will differ from upstream in their class strings. Re-running `shadcn add --overwrite` on them would lose the brand changes. Note this in each file with a one-line comment at the top.
 - No dark mode. The token structure keeps it possible later.
 - The currency toggle costs 2 spans per price and about 20 lines of client JS. That is far cheaper than hydrating every price.

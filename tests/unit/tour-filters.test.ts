@@ -75,6 +75,14 @@ describe("applyFilters", () => {
     );
     expect(applyFilters(items, parseFilters({ month: "2026-07" })).some((t) => t.cheaperPermits)).toBe(false);
   });
+
+  it("does not extend the confirmed 2026 discount into an unconfirmed future year", () => {
+    for (const value of ["2027-04", "2027-05", "2027-11", "2028-11"]) {
+      const results = applyFilters(items, parseFilters({ month: value }));
+      expect(results).toHaveLength(6);
+      expect(results.some((tour) => tour.cheaperPermits)).toBe(false);
+    }
+  });
 });
 
 describe("resultsLine (04-tours.md)", () => {
