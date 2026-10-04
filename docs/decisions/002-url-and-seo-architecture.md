@@ -167,6 +167,13 @@ FAQ rich results are now limited to authoritative government and health sites, s
 - Unit test: forbidden schema types are absent (see section 9)
 - Manual: Schema Markup Validator and Rich Results Test on one URL per page type (the tests can fetch a noindexed page), recorded in `docs/research/seo-validation.md`. Run `/seo-audit` or `seo-technical` if available, otherwise do the same checks by hand
 
+## Implementation notes (S5, 4 October 2026)
+
+- **`/tours` filtering** lives in `features/tours/lib/filters.ts` (pure, unit-tested). `TourResults` reads `useSearchParams()` inside `<Suspense>`, and the fallback is the full grid in recommended order, so the static HTML always contains all six tours. Cards are server components passed to the client as props; the client only filters, sorts and overlays the "Good in {Month}" and "Cheaper permits" badges.
+- **Tour FAQs** use Base UI's `hiddenUntilFound`. Closed panels otherwise unmount, which would remove the answers from the HTML that search engines and the `FAQPage` data rely on.
+- **`TouristTrip`** carries name, summary, URL, image, provider and an `ItemList` of the destinations visited, with no `offers`. A browser test asserts that no Offer, Review, AggregateRating or LocalBusiness appears.
+- **Unknown tour slugs** return a static 404 (`dynamicParams = false`). `next start` logs `NoFallbackError` for them; the response is still a correct 404.
+
 ## Consequences
 
 - Moving to a client domain means changing `NEXT_PUBLIC_SITE_URL` and setting `NEXT_PUBLIC_DEMO_MODE=false`. No code changes. `NEXT_PUBLIC_*` values are inlined at build time, so either change needs a redeploy.
