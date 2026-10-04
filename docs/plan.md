@@ -139,6 +139,7 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 ### Friday 9 October (ship day)
 
 **S9. Verification (morning)**: done 5 October 2026, branch `s9-verification`
+- Review: [PR #10](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/10), stacked on the open acceptance docs PR #9. Implementation `a9de3d1` has a successful Vercel check; its protected preview passes the 22-route crawl and home/form axe at 360px. Merge #9 first and retarget #10 to master
 - Playwright: enquiry happy path (email sending stubbed with a test env flag), validation errors, rate limit, every sitemap URL (200, one h1, canonical, noindex), `@axe-core/playwright` on one page of each template, a mobile 360px pass
 - Lighthouse on home, a tour page and plan-your-trip (mobile)
 - Schema Markup Validator on one URL per template, recorded in `docs/research/seo-validation.md`

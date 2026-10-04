@@ -42,6 +42,8 @@ S8 is merged in [PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tou
 
 **Checks after S9:** typegen/typecheck/lint/build pass; 253 unit tests and 146 Playwright passes (2 expected skips). Every sitemap page fits at 360px; all internal links and fragments resolve. All template axe scans include WCAG 2.1 A and pass; the logo's old overriding label omitted visible "Uganda" and is removed. All 12 Schema Markup Validator URLs pass with zero errors/warnings. Mobile Lighthouse performance: home 84, tour 78, form 85; blocking time is logged. Required noindex accounts for its SEO penalty. See `docs/research/s9-verification.md` and `docs/research/seo-validation.md`.
 
+**S9 review:** [PR #10](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/10), implementation `a9de3d1`, successful Vercel check. Its [protected preview](https://veilcode-tourism-i7k1ll67u-ghostsyscoders-projects.vercel.app) passes all 22 route checks and home/form axe at 360px using existing authenticated access. No production enquiry was created. Merge the open #9 acceptance docs PR first, then retarget #10 to master. The S9 preview has its own branch-scoped Sensitive dev hash secret.
+
 ---
 
 ## 2. Commands
