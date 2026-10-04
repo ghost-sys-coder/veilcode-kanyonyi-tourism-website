@@ -4,6 +4,8 @@ Every fact a traveller might rely on, with its source and the date it was checke
 
 **Checked:** 4 October 2026
 
+**S9 recheck:** 5 October 2026. The published permit figures and yellow-fever entry copy were checked against the primary documents linked below. Approved page wording and its 4 October stamps remain unchanged.
+
 ## Permits and park fees (Uganda Wildlife Authority)
 
 | Fact | Value | Used in | Source |
@@ -26,13 +28,15 @@ Every fact a traveller might rely on, with its source and the date it was checke
 
 Primary sources:
 - https://ugandawildlife.org/uwa-rates/ (tariff card, 2026 to 2027 changes)
+- https://ugandawildlife.org/wp-content/uploads/2026/03/Tariff-changes-2026-2027.pdf (UWA Ref TDO 93/04, 26 February 2026; both scanned pages read during S9. Page 1 confirms the low-season foreign non-resident/resident fees and the 1 January 2027 table; page 2 confirms full payment and removal of the seven-day hold from 1 March 2026)
+- https://ugandawildlife.org/wp-content/uploads/2024/01/CHANGES-IN-UWA-CONSERVATION-TARIFF.pdf (standard gorilla and Kibale chimp fees before the 2027 adjustments; dated July 2024 to June 2026)
 - https://www.bwindiforestnationalparkuganda.com/new-uwa-tariffs-2026-2027-uganda-gorilla-chimp-permit-prices/
 - https://www.gorillatrekkingsafarisuganda.com/understanding-ugandas-revised-gorilla-chimpanzee-permit-rates/
 - https://www.mumwesafarisuganda.com/blog/uganda-gorilla-permits-costs-booking-2026-rules.html
 - https://www.rwenzoritrekkingsafaris.com/uganda-low-season-chimpanzee-permits/
 - https://curioustoursafrica.com/uganda-wildlife-authority-tariff-guide-2024-to-2026/
 
-**Before launch on a client site:** download the current UWA tariff card PDF from ugandawildlife.org/uwa-rates and confirm each figure against it. The figures above are consistent across several operator sources but were not read from the PDF itself.
+**S9 primary-source check:** the 2026 low-season fees, unchanged 2027 gorilla trekking categories, 2027 foreign non-resident habituation/chimp fees, non-rescheduling rule and permit-payment change match the official scanned notice. The low-season paragraph has no explicit expiry date; this build keeps its approved 2026 column and conservative future-year copy until year-specific wording/rates are approved. Before a client launch, confirm the full current tariff and booking rules again; tips, porter fees and the illness-refund interpretation retain the separate sources above.
 
 ## Entry and health
 
@@ -40,10 +44,10 @@ Primary sources:
 | --- | --- | --- |
 | Uganda e-visa, single entry | USD 50 | https://www.dumaexplorer.com/blog/east-africa-visa-guide-eatv-tanzania-evisa-costs-rules |
 | East Africa Tourist Visa | USD 100, Kenya, Uganda and Rwanda, 90 days, multiple entry within the three | Same |
-| Yellow fever certificate | No longer required for entry, per Directorate of Citizenship and Immigration Control, 2 October 2026; some airlines and foreign sites still list it | https://www.kenyans.co.ke/news/127535-uganda-drops-yellow-fever-card-requirement-travellers · https://www.riotimesonline.com/uganda-ends-mandatory-yellow-fever-card-rule-2026/ |
+| Yellow fever certificate | No longer required for entry, per Directorate of Citizenship and Immigration Control, 2 October 2026; some airlines and foreign sites still list it | https://www.immigration.go.ug/node/254 (official notice; rechecked 5 October 2026) · https://www.kenyans.co.ke/news/127535-uganda-drops-yellow-fever-card-requirement-travellers · https://www.riotimesonline.com/uganda-ends-mandatory-yellow-fever-card-rule-2026/ |
 | Rwanda gorilla permit | USD 1,500 (2026) | https://www.dumaexplorer.com/blog/rwanda-gorilla-trekking-permits-costs-booking-guide |
 
-**Watch closely:** the yellow fever change is two days old at time of writing. Re-check before launch.
+**S9 recheck:** the official 2 October notice confirms that the entry certificate is no longer mandatory. An older immigration FAQ still lists it among visa documents (https://www.immigration.go.ug/index.php/node/198); prefer the dated official notice for the entry-rule claim and keep the approved airline-check advice. Recheck before travel or a later client launch. This verifies an entry requirement, not medical vaccination advice.
 
 ## Park facts
 

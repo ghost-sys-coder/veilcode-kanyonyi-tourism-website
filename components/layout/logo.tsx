@@ -11,7 +11,6 @@ export function Logo({ tone = "dark", className }: { tone?: "dark" | "light"; cl
   return (
     <Link
       href="/"
-      aria-label={`${site.operator.name} home`}
       className={cn("inline-flex items-center gap-2.5 rounded-sm no-underline", className)}
     >
       <svg viewBox="0 0 40 40" aria-hidden="true" className="size-9 flex-none">

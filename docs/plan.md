@@ -13,13 +13,11 @@ Status as of Sunday 4 October 2026, second review. Resolved items are listed at 
 | # | What | Blocks | By |
 | --- | --- | --- | --- |
 | F16 | Destinations hub "Map caption" with no map (G7). Caption is shown above the drive-time table; later copy gaps are listed below | None; fallback shipped | Wed |
-| F20 | Resend suppresses frank@veilcode.studio after a 27 July bounce. Confirm that mailbox works, then clear its old suppression and retry KX-1006 | S8 operator delivery acceptance | Before merge |
-| F21 | Explicit confirmation for the reviewed additive Neon main migration and production IP hash secret. Automatic approval review rejected the production mutation pending confirmation | Production readiness | Before merge / S10 |
 | F18 | **GA on Preview and local `.env`.** Still set there as of 4 Oct, so test visits reach GA unless the internal-traffic filter is on. Frank's call; no build impact | None | Any time |
 
 **Resolved on 4 October:** WhatsApp number (F1) · reference HTML path (F2) · Vercel and domain live (F3) · basic Consent Mode confirmed (F5) · photo sourcing, Unsplash/Pexels per 13-photo-brief.md (F7) · price model for 1 to 12 travellers (F8) · demo policy text (F9) · status colours (F11) · logo and favicon (F12) · DESIGN.md typo (F14) · AGENTS.md email address restored to frank@veilcode.studio (F17) · `/guides` index added to 06-guides.md (F15, C5) · Neon branches decided in AGENTS.md default 6 (F6) · `mail.veilcode.studio` verified in Resend (F4) · `DATABASE_URL_UNPOOLED` added (F13) · form placeholders, stepper labels, field errors, error summary and custom estimate added to 08-plan-your-trip.md (G1, G2, G3, G11) · MemPalace block restored in AGENTS.md section 38 (F19) · Neon `dev` branch created, `.env.local` points at it and both strings connect, Postgres 18 (4 Oct) · Resend vars added to Vercel Preview; Preview/Production DB strings confirmed by Frank (F18).
 
-**Heads-up:** `kanyonyi.veilcode.studio` currently serves the default "Create Next App" page with no `noindex`. S2's first deploy replaces it. If you want it out of search before Monday, set the domain to a Vercel password or redirect for now.
+**S8 acceptance resolved, 4 October:** Frank approved all pending actions. The old frank@ bounce suppression was removed and the KX-1006 operator retry delivered (F20). The reviewed migration applied to Neon main and a Sensitive production IP hash secret was configured (F21). Local development still uses dev. PR #8 is merged.
 
 ## Copy gaps (text the layout needs that isn't in docs/copy/)
 
@@ -111,7 +109,7 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 ### Thursday 8 October
 
 **S7. Homepage (Phase 02)**: done 4 October 2026, branch `s7-home`
-- Review: [draft PR #7](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/7). Vercel built commit `deafa8a` successfully; its preview requires Vercel login, so the unauthenticated smoke request reached the login page rather than the app
+- Review: [merged PR #7](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/7). Vercel built commit `deafa8a` successfully; its preview requires Vercel login, so the unauthenticated smoke request reached the login page rather than the app
 - Hero (photo, `priority`), trip finder (`tour_search` → `/tours?…`), four promises, signature trips, permit section, month picker, destinations, how booking works, reviews placeholder, three questions, closing CTA
 - Currency toggle with no flash on load
 - *Done when:* home LCP is the hero image, there's no layout shift from fonts or images, and the sun rule holds (C1)
@@ -122,7 +120,7 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 - The header is opaque for contrast over the dark band. Display XL retains 44–96px but grows more gradually for the full approved H1; both changes are recorded in 004. Playwright output/report folders are ignored by ESLint to avoid a generated-directory scan race
 - MemPalace MCP tools remain unavailable; documentation carries the session record. S8 is next and must replace the interim enquiry contact page
 
-**S8. Enquiries (Phase 05)**: implementation complete 4 October 2026, branch `s8-enquiries`; operator delivery acceptance pending
+**S8. Enquiries (Phase 05)**: done 4 October 2026, branch `s8-enquiries`, merged in PR #8; acceptance follow-up on `s8-acceptance`
 - Replace S6's interim `/plan-your-trip` WhatsApp contact page with the form and full side panel. The interim `interimBody` content can then be removed
 - Drizzle schema, first migration, `npm run db:migrate` against the Neon dev branch, then production
 - Zod schema, `submit-enquiry` action, repository, rate limit, honeypot, `services/email/resend.ts`, the email builders (demo and live traveller versions, operator notification), the 04-tours.md price model estimate, `db:purge` script
@@ -132,23 +130,31 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 - Implemented: full form, demo/live side panel and confirmations, authoritative Zod validation, standard-price/currency estimate, atomic three-per-ten-minute rate limit, honeypot, sequence references, escaped HTML/plain text and two independent Resend sends. No dependency added
 - Verified locally: typegen/typecheck/lint and production build; 253 unit tests, 2 real dev-database integration tests and 142 Playwright tests pass (2 expected skips). The final token/stamp adjustment passes all 22 enquiry tests on mobile and desktop. No-JavaScript submission, network/storage/rate/mail failures, bot handling, PII-free analytics, axe and 360px wrapping are covered
 - Dev migration applied; fixture rows removed; retention dry run reports zero eligible rows. Schedule production retention before October 2027 and monitor failed/pending email-status rows manually
-- Real preview: [draft PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/8), commit `029963e`, [protected preview](https://veilcode-tourism-git-s8-enquiries-ghostsyscoders-projects.vercel.app). KX-1006 is saved on Neon dev with the correct USD 3,300 estimate; its reference matches the screen and both email bodies/subjects. support@ confirmation delivered. frank@ notification suppressed by Resend after a July bounce (F20); known failure recorded on the dev test row. S8 is not marked done until both arrive
+- Real preview: [merged PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/8), implementation commit `029963e`, [protected preview](https://veilcode-tourism-git-s8-enquiries-ghostsyscoders-projects.vercel.app). KX-1006 is saved on Neon dev with the correct USD 3,300 estimate; its reference matches the screen and both email bodies/subjects. Frank confirmed support@ received the traveller confirmation. After explicit approval, the old July bounce suppression was removed and only the operator notification retried; Resend reports delivery to frank@. Both dev send flags are now `sent`; no second enquiry or traveller send was created
 - Preview additionally passes the real 22-route sitemap crawl, form axe WCAG 2.2 AA and 360px overflow check. The first submission failed configuration before storage/mail because stdin supplied a trailing newline in the hash secret; the newline-free secret and redeploy resolved it
-- Main migration has not run: automatic approval review requires explicit production confirmation (F21). The reviewed script/SQL are ready; production hash-secret setup remains pending. Local development continues to use dev
+- After explicit approval, the dedicated production runner applied the reviewed main migration. Read-only verification confirms 23 columns, the sequence-backed reference, database constraints, both indexes, one migration and zero production enquiries. Vercel Production has the newline-free Sensitive IP hash secret. The merged production build is redeployed to load it. Local development continues to use dev; S9/S10 audits and the final production enquiry smoke test remain
+- Production read-only smoke: all 22 sitemap URLs return 200 with one H1, a self canonical and noindex. The form has zero axe WCAG 2.2 AA violations and no horizontal overflow at 360px. No production enquiry or email was created
 - MemPalace MCP tools remain unavailable; decision 003 and handoff carry the session record. No diary results were invented
 
 ### Friday 9 October (ship day)
 
-**S9. Verification (morning)**
+**S9. Verification (morning)**: done 5 October 2026, branch `s9-verification`
+- Review: [PR #10](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/10), stacked on the open acceptance docs PR #9. Implementation `a9de3d1` has a successful Vercel check; its protected preview passes the 22-route crawl and home/form axe at 360px. Merge #9 first and retarget #10 to master
 - Playwright: enquiry happy path (email sending stubbed with a test env flag), validation errors, rate limit, every sitemap URL (200, one h1, canonical, noindex), `@axe-core/playwright` on one page of each template, a mobile 360px pass
 - Lighthouse on home, a tour page and plan-your-trip (mobile)
 - Schema Markup Validator on one URL per template, recorded in `docs/research/seo-validation.md`
 - **Re-check the yellow fever rule and UWA figures** (12-fact-register.md flags yellow fever as two days old)
 - Fix list triage: fix what blocks a demo and log the rest
+- Final checks: typegen/typecheck/lint/build pass; 253 unit tests and 146 Playwright tests pass (2 expected skips). All 22 sitemap pages fit at 360px with valid internal links/fragments, one H1, canonical, metadata/OG and both noindex signals. Fuller axe tags include WCAG 2.1 A; the shared logo now derives its accessible name from its visible text, fixing Label in Name. The finder test waits for the closing popup animation correctly
+- Schema Markup Validator fetched all 12 representative templates with zero errors and warnings. Google's Rich Results Test returned "Log in and try again" without a result; Frank should run the decision 002 Google checks from a signed-in browser during S10. No Google pass is claimed
+- Mobile Lighthouse production scores: home 84, tour 78, form 85; accessibility/best practices 100. SEO 69/69/66 is reduced only by required demo noindex. JavaScript blocking time is a logged follow-up, not a demo blocker. See `docs/research/s9-verification.md` and `docs/research/seo-validation.md` for evidence and limits
+- Primary UWA scanned notice and the dated official yellow-fever entry notice rechecked; the published copy needs no changes. Older immigration FAQ and unspecified discount expiry are documented in the fact register. Existing G18/G20 future-year gaps remain
+- MemPalace MCP tools unavailable; durable docs carry the session record. No production enquiry or email sent in S9
 
 **S10. Ship (early afternoon, stop by 17:00 EAT)**
 - Production env vars confirmed, production migration applied, production deploy
 - Smoke test on `kanyonyi.veilcode.studio`: one real enquiry, a WhatsApp link on mobile, consent accept and reject, `noindex` present
+- Run the remaining decision 002 Google Rich Results checks from a signed-in browser (the S9 service attempt required login). Keep noindex; per-template Schema Markup Validator already passes
 - Update `docs/decisions/` with anything that changed, and write a short `docs/launch-notes.md` (what shipped, what was cut, known issues)
 
 ## What gets cut first if we fall behind

@@ -24,6 +24,15 @@ test.describe("site shell", () => {
     await expect(page.locator("main#main")).toBeFocused();
   });
 
+  test("header and footer logo links include the visible wordmark in their accessible name", async ({ page }) => {
+    await page.goto("/");
+    for (const landmark of ["banner", "contentinfo"] as const) {
+      const logo = page.getByRole(landmark).getByRole("link", { name: /Kanyonyi.*Expeditions.*Uganda/i });
+      await expect(logo).toHaveCount(1);
+      await expect(logo).toHaveAttribute("href", "/");
+    }
+  });
+
   test("demo notice can be dismissed for the session", async ({ page }) => {
     await page.goto("/");
     const notice = page.getByText(/Demo site\. Kanyonyi Expeditions is a fictional operator/);
@@ -101,7 +110,7 @@ test.describe("site shell", () => {
   test("home and 404 have no WCAG 2.2 AA violations", async ({ page }) => {
     for (const path of ["/", "/this-trail-goes-nowhere"]) {
       await page.goto(path);
-      const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+      const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
       expect(results.violations.map((v) => `${path} ${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`)).toEqual([]);
     }
   });

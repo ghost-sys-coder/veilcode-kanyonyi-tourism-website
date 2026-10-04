@@ -47,8 +47,9 @@ test("finder sends selected filters, twelve rolling months and one tour_search e
   await finder.getByRole("combobox", { name: /What do you want to see/ }).click();
   await page.getByRole("option", { name: "Savannah wildlife", exact: true }).click();
   await finder.getByRole("combobox", { name: /When are you travelling/ }).click();
+  // The previous popup stays mounted during its exit animation.
+  await expect(page.getByRole("option")).toHaveCount(13);
   const options = await page.getByRole("option").allTextContents();
-  expect(options).toHaveLength(13);
   expect(options[0]).toBe("Any month");
   const first = options[1];
   await page.getByRole("option", { name: first, exact: true }).click();
@@ -123,7 +124,7 @@ test("home has no WCAG 2.2 AA violations at 360px, including open finder and sel
       // Base UI's invisible focus guards redirect focus and are intentionally aria-hidden.
       // Their implementation is unchanged; actual selects/options remain in the full audit.
       .exclude("[data-base-ui-focus-guard]")
-      .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
     expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`)).toEqual([]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
   };

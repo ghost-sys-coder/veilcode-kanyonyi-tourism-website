@@ -1,6 +1,6 @@
 # S8 enquiry verification, 4 October 2026
 
-Implementation commit: 029963e, branch s8-enquiries, draft PR #8.
+Implementation commit: 029963e, branch s8-enquiries, merged PR #8 (master 8a70d88). Acceptance follow-up: s8-acceptance.
 
 - Baseline typecheck/lint: pass. Baseline: 206 unit tests and 120 Playwright passes (2 expected skips).
 - Final typegen/typecheck/lint and production build: pass. 253 unit tests, 2 real Neon dev integration tests, 142 browser passes (2 expected skips). After final token/stamp adjustment, all 22 enquiry checks passed on mobile/desktop.
@@ -10,8 +10,9 @@ Implementation commit: 029963e, branch s8-enquiries, draft PR #8.
 - All 22 deployed sitemap URLs return 200 with one H1, the configured self canonical and noindex header. The form passes axe with zero violations and no horizontal overflow at 360px.
 - First real attempt failed server configuration before any write/send. The preview hash secret had a trailing newline from stdin; the exact hex value plus redeploy resolved it.
 - Real submission KX-1006: Neon dev stores two travellers, the Bwindi tour, November 2026 and USD 3,300. A keyed 64-character IP hash is stored, not the raw IP. Screen reference matches both mail subjects and bodies.
-- Traveller email to support@veilcode.studio: delivered (Resend 01a10773-db08-7da7-9490-c9f4422fac88).
-- Operator email to frank@veilcode.studio: suppressed (Resend 01a10773-db0d-7422-bf13-0068321d1977). The account-level suppression originated from a bounce on 27 July 2026. The known failure is recorded on the synthetic dev row. Mailbox confirmation and retry are pending (F20). No suppression has been removed.
+- Traveller email to support@veilcode.studio: delivered (Resend 01a10773-db08-7da7-9490-c9f4422fac88); Frank confirmed inbox receipt.
+- Operator email to frank@veilcode.studio: the original request (Resend 01a10773-db0d-7422-bf13-0068321d1977) was suppressed after a 27 July bounce. Frank explicitly approved removal and retry. The suppression was removed and the original operator body/reference retried with the distinct key `KX-1006:operator-retry-1`. Resend 01a108a3-5c7d-760c-abe5-97eeb9b80142 reports `delivered`. The synthetic dev row now has both email flags `sent`. No second enquiry or traveller email was sent. F20 is resolved.
 - App send flags describe API acceptance. For actual delivery, check Resend status; delivery webhooks are future work.
-- Main migration did not execute: automatic approval review rejected the persistent production mutation pending explicit user confirmation. The SQL and separate confirmation runner are reviewed in PR #8. Production secret setup is also pending (F21).
-- S8 acceptance remains open until both emails arrive. MemPalace MCP tools were unavailable; no graph/diary results were invented.
+- Main migration initially required explicit approval; Frank subsequently approved all pending actions. `npm run db:migrate:prod` applied the reviewed SQL through its confirmation runner. Read-only production verification: 23 columns, traveller/residency/status checks, unique reference, both indexes, one migration, zero enquiries. Vercel Production now has a Sensitive `IP_HASH_SECRET`, without a trailing newline; its value is never recorded. F21 is resolved. Local development still points to dev.
+- Production redeploy: https://veilcode-tourism-fz8ebxp1p-ghostsyscoders-projects.vercel.app, aliased to https://kanyonyi.veilcode.studio. All 22 sitemap URLs return 200, with one H1, a self canonical and both noindex signals. Canonical URLs are compared after URL normalization (the root with/without a trailing slash is the same URL). The production form has zero axe WCAG 2.2 AA violations and no horizontal overflow at 360px. The production sequence starts at 1001 and increments by one. These checks made no production enquiry or email.
+- S8 acceptance is complete. S9/S10 audits and the final production enquiry smoke test remain. MemPalace MCP tools were unavailable; no graph/diary results were invented.

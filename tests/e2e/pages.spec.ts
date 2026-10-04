@@ -25,7 +25,7 @@ for (const path of routes) {
     const data = await schemas(page);
     expect(data.map((entry) => entry["@type"])).toContain("BreadcrumbList");
     expect(JSON.stringify(data)).not.toMatch(/"@type":"(?:Offer|AggregateOffer|Review|AggregateRating|LocalBusiness|TravelAgency|PostalAddress|Person)"/);
-    const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+    const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
     expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`)).toEqual([]);
     await page.setViewportSize({ width: 360, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -155,5 +155,38 @@ test("every sitemap URL returns 200 with one h1 and a self canonical on the site
     expect(canonical, url).toBeDefined();
     expect(new URL(canonical!).href, url).toBe(new URL(url).href);
     expect(response.headers()["x-robots-tag"], url).toBe("noindex");
+    expect(html, url).toMatch(/<meta(?=[^>]*name="robots")(?=[^>]*content="[^"]*noindex)[^>]*>/);
+    expect(html, url).toMatch(/<title>[^<]+<\/title>/);
+    expect(html, url).toMatch(/<meta(?=[^>]*name="description")(?=[^>]*content="[^"]+")[^>]*>/);
+    const ogUrl = /<meta(?=[^>]*property="og:url")(?=[^>]*content="([^"]+)")[^>]*>/.exec(html)?.[1];
+    expect(new URL(ogUrl!).href, url).toBe(new URL(url).href);
+    const ogImage = /<meta(?=[^>]*property="og:image")(?=[^>]*content="([^"]+)")[^>]*>/.exec(html)?.[1];
+    expect(new URL(ogImage!).origin, url).toBe(new URL(url).origin);
+  }
+});
+
+test("all sitemap pages fit at 360px and every internal link and jump target resolves", async ({ page, request }) => {
+  test.setTimeout(90_000);
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => new URL(match[1]));
+  const paths = new Set(urls.map((url) => url.pathname));
+  const idsByPath = new Map<string, Set<string>>();
+  const links: { from: string; to: string; hash: string }[] = [];
+  await page.setViewportSize({ width: 360, height: 800 });
+  for (const url of urls) {
+    await page.goto(url.pathname);
+    await page.evaluate(() => document.fonts.ready);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), url.pathname).toBe(true);
+    idsByPath.set(url.pathname, new Set(await page.locator("[id]").evaluateAll((nodes) => nodes.map((node) => node.id))));
+    const hrefs = await page.locator("a[href]").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")!));
+    for (const href of hrefs) {
+      const target = new URL(href, url);
+      if (target.origin !== url.origin) continue;
+      expect(paths.has(target.pathname), `${url.pathname} links to ${href}`).toBe(true);
+      links.push({ from: url.pathname, to: target.pathname, hash: target.hash });
+    }
+  }
+  for (const link of links.filter((link) => link.hash)) {
+    expect(idsByPath.get(link.to)?.has(decodeURIComponent(link.hash.slice(1))), `${link.from} links to ${link.to}${link.hash}`).toBe(true);
   }
 });

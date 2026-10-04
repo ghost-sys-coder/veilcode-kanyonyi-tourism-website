@@ -14,7 +14,7 @@ The source of truth is decision 002 and the installed Next.js guides for page fi
 - Typecheck and lint pass. Vitest: 203 passed. Playwright: 104 passed, 2 expected skips. The production build is part of the Playwright command.
 - The required reference prototype was opened in Chromium before implementation. The destination hub at desktop size and permit guide at 360px were visually inspected.
 
-## Still assigned to S9
+## Assigned to S9 at the S6 handoff
 
 External Schema Markup Validator/Rich Results Test, Lighthouse and the pre-launch check of UWA fees and the yellow-fever entry rule. Automated axe results cover the rules it can detect and do not replace manual accessibility review.
 
@@ -32,3 +32,38 @@ Keep the current clean canonical paths, static content routes and noindex demo c
 - Final checks: typegen, typecheck, lint and production build pass; 206 Vitest tests and 120 Playwright tests pass (2 expected skips). All 22 sitemap URLs still return 200 with one H1 and a self canonical. Desktop and 360px hero/seasons layouts were visually inspected.
 - Lighthouse and external schema validators remain S9. These browser measurements are local lab checks, not field Core Web Vitals.
 - [Draft PR #7](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/7) is ready for review. GitHub's Vercel check reports SUCCESS for implementation commit `deafa8a`. The [preview](https://veilcode-tourism-git-s7-home-ghostsyscoders-projects.vercel.app) redirects unauthenticated visitors to `vercel.com/login` (title "Login – Vercel"); the returned 200 is the login page, not a homepage smoke pass. Open it with Frank's Vercel session for deployed review.
+
+## S9 external schema validation (5 October 2026)
+
+[Schema Markup Validator](https://validator.schema.org/) fetched and rendered the public production URLs below. Its actual response payloads confirmed each requested URL, `isRendered: true`, `totalNumErrors: 0` and `totalNumWarnings: 0`. UI results were checked too. These checks used production master `8a70d88`; the S9 logo change does not alter structured data.
+
+| Template / URL | Detected top-level groups | Errors | Warnings |
+| --- | --- | --- | --- |
+| `/` | WebSite | 0 | 0 |
+| `/tours` | BreadcrumbList, ItemList, WebSite | 0 | 0 |
+| `/tours/3-day-bwindi-gorilla-trek` | TouristTrip, BreadcrumbList, WebSite, FAQPage | 0 | 0 |
+| `/destinations` | BreadcrumbList, ItemList, WebSite | 0 | 0 |
+| `/destinations/bwindi` | BreadcrumbList, WebSite, TouristDestination, FAQPage | 0 | 0 |
+| `/guides` | BreadcrumbList, ItemList, WebSite | 0 | 0 |
+| `/guides/uganda-gorilla-permits` | BreadcrumbList, Article, WebSite | 0 | 0 |
+| `/faq` | BreadcrumbList, WebSite, FAQPage | 0 | 0 |
+| `/about` | BreadcrumbList, WebSite, AboutPage | 0 | 0 |
+| `/plan-your-trip` | BreadcrumbList, WebSite | 0 | 0 |
+| `/booking-terms` | BreadcrumbList, WebSite | 0 | 0 |
+| `/privacy` | BreadcrumbList, WebSite | 0 | 0 |
+
+Organization is present as the WebSite publisher linked by its ID; the validator merges connected nodes rather than counting it as a separate top-level group. No Offer, Review, AggregateRating, LocalBusiness, PostalAddress or Person is emitted. Local recursive schema unit tests and browser assertions remain in place.
+
+Raw validator payloads, concise JSON results and screenshots are retained in the ignored `playwright-report/s9/` folder. A first multi-test validator session displayed a stale previous result; those results were discarded. The final run used a fresh validator page per URL and verified the response's actual URL.
+
+### Google Rich Results Test limitation
+
+[Rich Results Test](https://search.google.com/test/rich-results) was opened and the public homepage submitted with the smartphone inspection option. It returned **"Something went wrong / Log in and try again"** without a result. Its screenshot and text are retained as `playwright-report/s9/rich-results-home.{png,txt}`. This is an external service sign-in limitation, not a passed test or a structured-data failure. The remaining per-template Google tests in decision 002 section 12 must be run from Frank's signed-in browser during S10. All per-template Schema Markup Validator checks above completed independently.
+
+Keep the required demo noindex. A valid Schema.org result does not guarantee Google rich-result eligibility; the existing FAQ eligibility limitation in decision 002 remains applicable.
+
+## S9 crawl, accessibility and performance
+
+Final production-build tests cover all 22 sitemap URLs, title/description and Open Graph host/URL, both noindex signals, one H1 and self canonicals. All internal links and fragments resolve and every sitemap page fits at 360px. All template axe scans now include WCAG 2.1 A rules as well as the existing AA tags. The logo Label in Name fix is verified in both shared landmarks.
+
+Typegen, typecheck, lint and production build pass; 253 unit tests and 146 Playwright tests pass, with two expected skips. Mobile Lighthouse scores, its intentional demo-indexing penalty, primary fact rechecks and triaged performance follow-ups are recorded in [S9 verification](s9-verification.md).
