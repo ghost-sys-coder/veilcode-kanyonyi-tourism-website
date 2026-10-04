@@ -40,6 +40,9 @@ export const about = {
   },
   team: {
     heading: "Our team",
+    demoNote: "Demo note: on a live site, real team photos and names go here. Sample entries for the demo:",
+    // A client content swap fills these with real identities.
+    liveMembers: [] as readonly { name: string; role: string; line: string }[],
     members: [
       {
         name: "Sarah Namutebi",
@@ -60,6 +63,7 @@ export const about = {
   },
   licences: {
     heading: "Licences and memberships",
+    live: "",
     demo: "On a live site, licence numbers and association memberships are listed here so travellers can check them.",
   },
   close: {

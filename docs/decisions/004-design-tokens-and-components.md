@@ -289,6 +289,15 @@ AGENTS.md section 0 lists the Base UI differences. These are the places they app
 - **`site-image.tsx`** wraps `next/image` with `hero`, `card` and `inline` size presets, a blur placeholder, the photo brief's `--muted` placeholder for unsourced images, and an optional caption with the "Photo: {photographer} / Unsplash" credit. A `sizes` override exists for images in narrower columns than their preset assumes; the interim homepage needed it.
 - **Open Graph.** `pageMetadata(path, { image })` uses the page's crop and falls back to the home hero.
 
+### 13. Destination, guide and policy patterns (S6, 4 October 2026)
+
+- Destination and guide heroes use the existing `Section`, breadcrumb and `SiteImage`, with text on the solid background and a separate captioned photo. Split layouts collapse below 720px; image sizes reflect the half-container width.
+- Hubs use the installed shadcn `Card` for distinct comparable destinations/guides. Destination detail pages reuse `TripCard` and its existing `Price` and itinerary analytics.
+- `ContentTable` composes shadcn `Table` with explicit column/row header scopes and wrapping cells. `PermitTable` adds the existing `FactStamp` and reads one fee registry. No shadcn file, token or component behaviour changed.
+- `CloseCta` accepts an optional secondary node for the guides' FAQ link and about's WhatsApp link. Main links retain `cn(buttonVariants(), ...)`; WhatsApp retains its existing analytics and accessible external-link suffix. S6 closing actions are forest.
+- `BackToTop` is now shared by guides and FAQ. Sample team entries are an explicitly labelled list, with no invented portraits or Person schema.
+- The reference HTML was opened in Chromium before implementation. Desktop destinations and the 360px permit guide were also inspected visually.
+
 ## Consequences
 
 - shadcn component files will differ from upstream in their class strings. Re-running `shadcn add --overwrite` on them would lose the brand changes. Note this in each file with a one-line comment at the top.

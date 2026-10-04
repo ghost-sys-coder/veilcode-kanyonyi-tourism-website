@@ -174,6 +174,15 @@ FAQ rich results are now limited to authoritative government and health sites, s
 - **`TouristTrip`** carries name, summary, URL, image, provider and an `ItemList` of the destinations visited, with no `offers`. A browser test asserts that no Offer, Review, AggregateRating or LocalBusiness appears.
 - **Unknown tour slugs** return a static 404 (`dynamicParams = false`). `next start` logs `NoFallbackError` for them; the response is still a correct 404.
 
+## Implementation notes (S6, 4 October 2026)
+
+- Destination hubs and guides index emit `ItemList`; destination details emit `TouristDestination` and `FAQPage`; guides emit `Article`; `/faq` emits its 16 answers as `FAQPage`; about emits `AboutPage` with the organization as `mainEntity`. All routes use `pageMetadata()` and matching breadcrumb data.
+- The schema builders omit `touristType`: no approved audience value exists in the content model. The section 9 table's originally proposed field is deferred rather than invented. No forbidden type, address, coordinates, telephone or sample person is emitted; the unit check now covers all page builders recursively.
+- Guide authors are visible and modelled as an `Organization`. The updated date appears once in the eyebrow, resolving C6. Article image, dates, headline and canonical are drawn from the same guide content.
+- The sitemap still lists all 22 routes, including the interim `/plan-your-trip` contact page. Its form remains S8 work. The crawl compares normalized URLs because Next omits the root canonical's trailing slash while the sitemap includes it.
+- `tests/e2e/pages.spec.ts` checks each new route's status, heading, canonical, demo indexing, JSON-LD, axe WCAG 2.2 AA results and 360px overflow. It also crawls every sitemap URL and checks the commercial links, shared permit table, month blocks, FAQ keyboard behaviour and demo policy variants.
+- Playwright always builds its own server (`reuseExistingServer: false`). A leftover Windows test server previously caused new routes to be tested against an old build; fail explicitly if port 3100 is occupied. In this sandbox, production-test process teardown required an escalated run.
+
 ## Consequences
 
 - Moving to a client domain means changing `NEXT_PUBLIC_SITE_URL` and setting `NEXT_PUBLIC_DEMO_MODE=false`. No code changes. `NEXT_PUBLIC_*` values are inlined at build time, so either change needs a redeploy.

@@ -16,11 +16,13 @@ export function CloseCta({
   content,
   tourSlug,
   sun = false,
+  secondary,
 }: {
   content: CloseCtaContent;
   tourSlug?: string;
   /** Sun only when no other sun button shares the viewport (DESIGN.md section 2). */
   sun?: boolean;
+  secondary?: React.ReactNode;
 }) {
   const { target, label } = content.button;
   const buttonClass = cn(
@@ -61,6 +63,7 @@ export function CloseCta({
           </p>
         ) : null}
         {action}
+        {secondary}
       </div>
     </section>
   );

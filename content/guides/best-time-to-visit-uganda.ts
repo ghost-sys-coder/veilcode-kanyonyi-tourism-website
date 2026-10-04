@@ -126,6 +126,7 @@ export const bestTimeGuide = {
   datePublished: "2026-10-04",
   dateModified: "2026-10-04",
   author: "Kanyonyi Expeditions planning team",
+  factStamp: "Checked 4 October 2026 against Uganda Wildlife Authority and Uganda immigration sources. Prices and rules can change; we confirm current rates in your quote.",
   image: { id: "guide-best-time-to-visit-uganda" },
   close: {
     heading: "Tell us your month",
