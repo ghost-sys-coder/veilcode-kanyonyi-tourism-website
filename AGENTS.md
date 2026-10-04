@@ -18,7 +18,9 @@ The rules below describe how to build. This section describes what is being buil
 
 **Operator:** Kanyonyi Expeditions, a fictional private safari operator based in Kololo, Kampala, Uganda. Sells small group and private trips: gorilla and chimp trekking, savannah safaris, Nile adventures. Most travelers are from the UK, US, Europe and Australia; some are Uganda residents.
 
-**Contact routing:** The WhatsApp button opens a chat with VeilCode Studio's real business number [FILL IN: number in international format] with a prefilled message ("Hi, I'm interested in the Kanyonyi demo site"). Displayed office address and phone are clearly sample values.
+**Contact routing:** The WhatsApp button opens a chat with VeilCode Studio's real business number, +256 750 242627, read from `NEXT_PUBLIC_WHATSAPP_NUMBER`, with a prefilled message ("Hi, I'm interested in the Kanyonyi demo site."). There is no separate office phone number. The displayed office address is a clearly labelled sample value.
+
+**Demo mode:** `NEXT_PUBLIC_DEMO_MODE=true` switches on the demo bar, `noindex`, and the demo variants of copy marked "Demo version" in `docs/copy/`. A client build sets it to `false`.
 
 **Business model:** Enquiry led. Travelers request a tailored quote. The operator confirms availability, buys permits and takes a deposit outside the website (mobile money, bank transfer or card). This build has no online booking, availability engine or payments. Do not design for them beyond keeping the data model open to them later.
 
@@ -30,18 +32,29 @@ The rules below describe how to build. This section describes what is being buil
 
 **Content cap for this build:** 4 destinations (Bwindi, Kibale, Queen Elizabeth, Murchison Falls), 6 tours, 3 travel guides (gorilla permits, best time to visit, what to pack). Do not add more until the deadline has passed.
 
-**Design:** Follow `docs/design/DESIGN.md` for tokens, typography, photography and component patterns. `docs/design/reference/kanyonyi-reference.html` is the visual reference prototype; open it in a browser before building any page. DESIGN.md wins where they differ.
+**Design:** Follow `docs/design/DESIGN.md` for tokens, typography, photography and component patterns. `docs/design/reference/kanyonyi-reference.html` is the visual reference prototype; open it in a browser before building any page. If it is missing, stop and ask for it rather than continuing without it. DESIGN.md wins where they differ.
+
+**shadcn/ui uses Base UI, not Radix.** This project's shadcn components are built on Base UI primitives. Most shadcn examples online and in training data are Radix-era and will not work as written. The installed files in `components/ui/` are the source of truth; read a component's file before using it. Key differences:
+
+1. Composition uses `render`, not `asChild`: `<DialogTrigger render={<Button />}>Open</DialogTrigger>`.
+2. When `render` turns a Button into a non-button element, add `nativeButton={false}`. Links styled as buttons: `<Button render={<Link href="/plan-your-trip" />} nativeButton={false}>Plan my trip</Button>`.
+3. Select takes an `items` prop on the root; the placeholder is an item with `value: null`.
+4. ToggleGroup and Accordion use a `multiple` boolean, not `type`, and `defaultValue` is always an array.
+5. Add components with the shadcn CLI so they come from the same Base UI registry. Never paste Radix versions or install `@radix-ui/*` packages.
+
+Reference: https://github.com/shadcn-ui/ui/blob/main/skills/shadcn/rules/base-vs-radix.md
 
 **Copy:** All page copy is written and approved in `docs/copy/`. Use it word for word; do not write or rewrite marketing copy. If a layout needs text that isn't there, use the nearest existing line and list the gap in your summary. Time-sensitive facts and their sources are in `docs/copy/12-fact-register.md`.
 
 **Decided defaults** (do not reopen these without a stated reason):
 
 1. Hosting and domain: Vercel, served at `kanyonyi.veilcode.studio` (a CNAME on the existing veilcode.studio DNS). No domain is purchased for this build; a client's own domain is bought only when a client commissions their site. Read the site's base URL from one environment variable (`NEXT_PUBLIC_SITE_URL`) and use it for canonicals, the sitemap, `robots.txt`, `llms.txt`, Open Graph URLs and structured data. Never hardcode the hostname, so moving to a client domain is a config change.
-2. Enquiries: stored in Neon Postgres. Email via Resend, sent from a verified subdomain (for example `mail.veilcode.studio`) to protect the main domain's reputation. Each enquiry sends two emails: a notification to frank@veilcode.studio, and a branded confirmation to the traveler with their reference number and next steps. The confirmation is sent as "Kanyonyi Expeditions" from an address on that sending subdomain, with reply-to set to frank@veilcode.studio. Do not display or send from any `kanyonyi` mailbox, since none exists.
-3. Analytics: Google Analytics 4 with Consent Mode v2, because many travelers are in the UK and EU. Events follow section 25; mark `submit_enquiry` and `whatsapp_click` as key events. Do not use Vercel Web Analytics custom events (Pro plan only).
+2. Enquiries: stored in Neon Postgres. Email via Resend, sent from a verified subdomain (for example `mail.veilcode.studio`) to protect the main domain's reputation. Each enquiry sends two emails: a notification to `frank@veilcode.studio`, and a branded confirmation to the traveler with their reference number and next steps. The confirmation is sent as "Kanyonyi Expeditions" from an address on that sending subdomain, with reply-to set to `frank@veilcode.studio`. Do not display or send from any `kanyonyi` mailbox, since none exists.
+3. Analytics: Google Analytics 4 with Consent Mode v2 in **basic** mode: the GA script does not load at all until the visitor clicks "Accept analytics", and "Reject" loads nothing. Many travellers are in the UK and EU. Events follow section 25; mark `submit_enquiry` and `whatsapp_click` as key events. Do not use Vercel Web Analytics custom events (Pro plan only).
 4. Images: the operator's own photography where supplied. Otherwise freely licensed stock (e.g. Unsplash, Pexels), with photographer, source URL and licence recorded in the media metadata. Never hotlink.
 5. Tests: Vitest for unit and component tests, Playwright for end to end and accessibility checks.
-6. Content: tours, destinations and guides live as typed files in `content/` until the operator needs to edit them without a developer. That is the trigger for a CMS or database decision.
+6. Neon branches: the `main` branch is production and is used only by the Vercel production deployment. A `dev` branch (created from `main`) is used by `.env.local` and Vercel preview deployments. Migrations run against `dev` first, then `main` once verified. Never point local development at `main`.
+7. Content: tours, destinations and guides live as typed files in `content/` until the operator needs to edit them without a developer. That is the trigger for a CMS or database decision.
 
 **Demo content rules** (apply only if the operator is fictional):
 
@@ -376,7 +389,7 @@ Strictly enforce one React component per `.tsx` file.
 
 Do not define several unrelated React components inside the same file.
 
-Exception: files generated by shadcn in `components/ui/` keep their upstream structure (for example `card.tsx` exports Card, CardHeader and CardContent). Do not split or rewrite them.
+Exception: files generated by shadcn in `components/ui/` keep their upstream structure (for example `card.tsx` exports Card, CardHeader and CardContent). Do not split them or change their structure, props or behaviour. You may edit their Tailwind classes and variants to apply the design tokens in DESIGN.md; keep those edits minimal and list them in decision record 004.
 
 Example:
 
@@ -1268,6 +1281,49 @@ If MemPalace retrieves an older decision that conflicts with current documentati
 Important project decisions should be written into durable project documentation so future agents can retrieve them.
 
 Do not use MemPalace as an excuse to avoid documentation.
+
+## How MemPalace is set up in this project (4 October 2026)
+
+- **Palace:** local and private, at the default path (`mempalace status`). Wing **`kanyonyi`**. Rooms:
+  - `decisions`: docs/decisions, docs/plan.md
+  - `copy`: docs/copy
+  - `design`: docs/design
+  - `rules`: AGENTS.md, CLAUDE.md
+  - `frontend`: app, components
+  - `lib`: lib, config, content, features, services, db
+  - `diary`: session entries
+
+  Room routing lives in `mempalace.yaml` (git-ignored, per machine).
+- **MCP:** registered for Claude Code as `mempalace` (local scope, command `mempalace-mcp`). Check that the `mempalace_*` tools are in the live tool list. If they aren't, run `claude mcp get mempalace` and reconnect. Never guess or simulate palace results.
+- **Hooks:** `.claude/settings.local.json` runs `mempalace hook run` on SessionStart, Stop (silent save every 15 messages), PreCompact and SessionEnd. `MEMPAL_DIR` is set to this repo, so changed files are re-mined in the background.
+
+**Every session:**
+
+1. **Start:** run `mempalace_kg_query` on the entities you are about to touch, then `mempalace_diary_read` (agent `claude-code`) for the last session's notes. Use `mempalace_search` scoped to wing `kanyonyi` for anything else. Entities currently recorded:
+   - Build: `kanyonyi_build`, `cut_list`, `copy_gaps`
+   - Content and pages: `content_model`, `guides`, `guides_index`, `tour_pages`, `tours_filters`
+   - Pricing: `tour_pricing`, `low_season_pricing`, `currency_toggle`
+   - SEO and rendering: `rendering`, `indexing`, `structured_data`
+   - Enquiries: `enquiry_submit`, `enquiry_storage`, `enquiry_reference`, `enquiry_email`, `rate_limit`, `demo_retention`, `neon_branches`
+   - Other: `analytics`, `shadcn`, `sun_cta`, `dependencies`
+2. **When a decision changes:** update the decision record in `docs/decisions/` (or `docs/plan.md`) first, because it is the source of truth. Then run `mempalace_kg_invalidate` on the old fact (with `ended` set to the date) and `mempalace_kg_add` for the new one (with `valid_from` set to the date and `source_file` pointing at the record). Facts are at most 128 characters; split longer ones into several facts on the same subject.
+3. **When an open question is answered:** invalidate the `open_question` fact and add a `decided` fact.
+4. **End:** run `mempalace_diary_write` with agent `claude-code`, wing `kanyonyi`, and topic set to the session (`s1-foundation`, `s2-shell`, …). Record what shipped, what was cut, new open questions and anything the next session must know.
+5. **After large doc or code changes:** run `mempalace mine . --agent claude-code` (incremental; it replaces a changed file's drawers rather than duplicating them). Run `mempalace sync --wing kanyonyi` to preview pruning drawers for deleted or moved files, and `--apply` to prune them.
+
+**Knowledge graph predicates.** This is a closed set; don't invent new ones:
+
+- `decided`
+- `uses`
+- `forbids`
+- `has_deadline`
+- `has_scope`
+- `hosted_at`
+- `status`
+- `open_question`
+- `cut_first`
+
+**Never** file secrets in the palace: no `.env` values, API keys or connection strings. Never file traveller personal data from enquiries either.
 
 ---
 

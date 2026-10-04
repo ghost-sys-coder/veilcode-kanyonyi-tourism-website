@@ -1,0 +1,151 @@
+# Kanyonyi build plan: Phases 02 to 05
+
+**Written:** Sunday 4 October 2026 (end of Phase 01)
+**Hard stop:** Friday 9 October 2026. Whatever works on that date ships.
+**Decisions this plan relies on:** [001 content](decisions/001-content-architecture.md) · [002 URLs and SEO](decisions/002-url-and-seo-architecture.md) · [003 enquiry flow](decisions/003-enquiry-flow.md) · [004 tokens and components](decisions/004-design-tokens-and-components.md)
+
+---
+
+## Needs from Frank
+
+Status as of Sunday 4 October 2026, second review. Resolved items are listed at the end of this section.
+
+| # | What | Blocks | By |
+| --- | --- | --- | --- |
+| F16 | **Copy gaps G1, G2, G3, G7, G11 are still open** (next section). Not addressed in the 4 October update | Form (S8), hub (S6) | Wed |
+| F18 | **Confirm `.env` points at the Neon `dev` branch.** AGENTS.md now says local work uses `dev` via `.env.local`, but the project only has `.env`, and its endpoint name doesn't show which branch it is. Either rename it to `.env.local` with the dev connection strings, or confirm it's already dev | S8 migrations | Wed |
+| F19 | **AGENTS.md section 38 lost the MemPalace setup block** added on 4 October (the file was replaced). Re-add it, or say if it was removed on purpose | Every session | Mon |
+
+**Resolved on 4 October:** WhatsApp number (F1) · reference HTML path (F2) · Vercel and domain live (F3) · basic Consent Mode confirmed (F5) · photo sourcing, Unsplash/Pexels per 13-photo-brief.md (F7) · price model for 1 to 12 travellers (F8) · demo policy text (F9) · status colours (F11) · logo and favicon (F12) · DESIGN.md typo (F14) · AGENTS.md email address restored to frank@veilcode.studio (F17) · `/guides` index added to 06-guides.md (F15, C5) · Neon branches decided in AGENTS.md default 6 (F6) · `mail.veilcode.studio` verified in Resend (F4) · `DATABASE_URL_UNPOOLED` added (F13).
+
+**Heads-up:** `kanyonyi.veilcode.studio` currently serves the default "Create Next App" page with no `noindex`. S2's first deploy replaces it. If you want it out of search before Monday, set the domain to a Vercel password or redirect for now.
+
+## Copy gaps (text the layout needs that isn't in docs/copy/)
+
+Per the brief, I'll use the nearest existing line and list each one here. Nothing is invented silently. G4, G5, G8 and G10 are resolved by the 02-global.md interface strings and 13-photo-brief.md, and G6 by the demo email.
+
+| # | Where | Need | Nearest existing line used until approved |
+| --- | --- | --- | --- |
+| G1 | Form errors on selects, radios and consent | "Please add your {field name}." reads badly for "Which trip?" | `which trip` / `travel month` / `country of residence` / `agreement to the privacy notice` inserted into the template |
+| G2 | Select placeholder items (Base UI needs an item with `value: null` and a label) | e.g. "Choose a trip", "Choose a month" | Trip finder: its own "Any …" options are the default, so it isn't affected. Enquiry form: placeholder label = the field label |
+| G3 | Traveller stepper buttons (screen reader labels) | "Add a traveller" / "Remove a traveller" | None exists |
+| G7 | Destinations hub "Map caption" | The copy implies a map, but there is no map asset | Caption shown above the drive-time table, no map |
+| G9 | Destination closing body for Kibale, Queen Elizabeth, Murchison | Heading and button only in the copy | Rendered without a body (fine if intended) |
+| G11 | Demo traveller email for "Something custom" | `{estimate}` row value | "We'll price your custom trip in your quote." |
+| G12 | Operator notification in demo mode | The copy has one version only | Same email in both modes (it only goes to frank@) |
+
+## Conflicts found, with proposed resolutions
+
+| # | Conflict | Proposed resolution |
+| --- | --- | --- |
+| C6 | 06-guides.md: show "Updated {date}" under the H1, while each guide's eyebrow above the H1 already reads "Guide · Updated 4 October 2026" | Show it once, in the eyebrow, using the 02-global.md format and `dateModified` |
+| C7 | DESIGN.md 10.1: trip finder results "crawlable" in the URL, versus AGENTS.md section 13 on avoiding near-duplicate pages | Filtered URLs work and can be shared, but canonicalise to `/tours`. All six tours are in the static HTML (002 section 4) |
+| C9 | AGENTS.md section 42 lists "Activities" (Phase 03) and "CRM integration" (Phase 05) | Activities are sections on destination pages. The `enquiries` table is the lead record. No CRM |
+| C10 | AGENTS.md section 8 lists shadcn `Form`. The installed `base-nova` style uses `Field` | Use `Field`. No react-hook-form (003 section 11) |
+| C12 | `app/globals.css` maps `--font-sans: var(--font-sans)`, which refers to itself | Fixed in S1 (004 section 2) |
+| C13 | 04-tours.md: "Tours with gorilla permits subtract USD 200" in low season. Tours 4 and 5 also include a chimp permit, whose low-season discount is USD 50, and tour 3 is chimp-only with no discount in the formula | Follow the copy exactly (USD 200 for tours 1, 4, 5; nothing for tour 3). Only tour 1's table shows a low-season column, and the estimate is standard season only, so this affects nothing rendered today |
+| C14 | 13-photo-brief.md lists 27 images. The plan budgeted one session for 15 | Shots 1 to 11 and 24 to 27 (15 images) in S4. Galleries (shots 12 to 23) stay first on the cut list, with the brief's `--muted` placeholder rule covering any gap |
+
+**Resolved on 4 October:** C1 (sun placement), C2 (reference path), C3 (shadcn class edits), C4 (no phone), C8 (month behaviour), C11 (demo email and success state).
+
+## Build order
+
+Sessions are about 3 to 4 focused hours. There are two per day, Monday to Thursday, and Friday is QA and ship. The order is adjusted from AGENTS.md section 42: tours (Phase 04) come **before** the homepage and destination pages, because both render trip cards. The Resend subdomain (F4) should be verified on Monday, so Thursday's enquiry build isn't blocked on DNS.
+
+Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit on a feature branch, and (from S2 on) a Vercel preview deploy.
+
+### Monday 5 October
+
+**S1. Foundation (Phase 02)**
+- Install dependencies (003 section 11). Add `vitest.config.ts`, `playwright.config.ts`, `npm run` scripts and `.env.example`
+- Tokens and fonts into `globals.css` and `app/fonts.ts` (004 sections 1 and 2). Contrast check for the status colours
+- shadcn: adjust `button`, `badge`, `input`, `textarea`, `select` and `card`; add the 16 components from 004 section 4
+- `types/content.ts`, `content/site.ts`, `content/ui.ts`, `content/meta.ts`, `lib/content/inline.tsx` and its tests
+- *Done when:* a styles page in dev shows every button, input and type size on the brand tokens
+
+**S2. Shell and SEO infrastructure (Phase 02)**
+- Root layout: `metadataBase`, title template, robots meta, skip link, demo notice, header (desktop nav, currency toggle, CTA), mobile menu sheet, footer, `not-found.tsx`, `error.tsx`, `global-error.tsx`
+- `robots.ts`, `sitemap.ts` (from a content index stub), `llms.txt/route.ts`, `X-Robots-Tag` and security headers in `next.config.ts`, `json-ld.tsx` with Organization and WebSite, breadcrumb component
+- Analytics: consent script, consent banner, `track()`, cookie settings link
+- WhatsApp FAB and `whatsapp-link.tsx`
+- **First real deploy to `kanyonyi.veilcode.studio`**, replacing the default page
+- *Done when:* the deployed shell returns `noindex` in both the header and the meta tag, and robots, sitemap and llms.txt resolve with the right host
+
+### Tuesday 6 October
+
+**S3. Content entry (Phases 03 and 04 data)**
+- Transcribe all six tours, four destinations, three guides, FAQ, seasons, facts and every `content/pages/*.ts` from `docs/copy/`, word for word
+- Content integrity tests (001 section 5): slugs, refs, prices, derived tour lists, meta lengths, banned phrases, em dashes, `[CLIENT:` leakage
+- *Done when:* `npm test` passes with all content present
+
+**S4. Photography and media**
+- Source shots 1 to 11 and 24 to 27 from 13-photo-brief.md, following its subject rules, alt and caption patterns. Record attribution, process with `sharp` (max 2400px, OG crops), and fill in `content/media.ts`. Lift the bird mark SVG from the reference file for the logo and favicon
+- `site-image.tsx` with size presets, plus caption and credit rendering
+- *Done when:* every `MediaRef` resolves and card images are under 200 KB
+
+### Wednesday 7 October
+
+**S5. Tours (Phase 04)**
+- `trip-card`, `trip-grid`, `price` (dual currency), `key-facts-strip`, `at-a-glance`, `itinerary-day`, `inclusion-list`, `fact-stamp`, `close-cta`
+- `/tours/[slug]` (all nine sections in order, TouristTrip and FAQPage JSON-LD, breadcrumbs, related links, `tour_view`)
+- `/tours` with `tour-filters` (chips, sort, `?experience`, `?length`, `?month`), the results line, the empty state, the price note, the 2027 callout and the ItemList JSON-LD
+- *Done when:* all six tour pages render on a 360px viewport, and the filters produce the copy's results line and empty state
+
+**S6. Destinations, guides, FAQ, about, policies (Phase 03)**
+- `/guides` index (06-guides.md), `/destinations` hub and `/destinations/[slug]` (TouristDestination, FAQPage, derived "Tours that visit")
+- `/guides/[slug]` (block renderer, jump links, Article JSON-LD, `permit-table` with its stamp)
+- `/faq` (Accordion, FAQPage, stamp), `/about`, `/booking-terms`, `/privacy` (with the demo policy notice)
+- *Done when:* every URL in the sitemap returns 200 locally, with one `<h1>` and a valid canonical
+
+### Thursday 8 October
+
+**S7. Homepage (Phase 02)**
+- Hero (photo, `priority`), trip finder (`tour_search` → `/tours?…`), four promises, signature trips, permit section, month picker, destinations, how booking works, reviews placeholder, three questions, closing CTA
+- Currency toggle with no flash on load
+- *Done when:* home LCP is the hero image, there's no layout shift from fonts or images, and the sun rule holds (C1)
+
+**S8. Enquiries (Phase 05)**
+- Drizzle schema, first migration, `npm run db:migrate` against the Neon dev branch, then production
+- Zod schema, `submit-enquiry` action, repository, rate limit, honeypot, `services/email/resend.ts`, the email builders (demo and live traveller versions, operator notification), the 04-tours.md price model estimate, `db:purge` script
+- `/plan-your-trip`: form, side panel, live estimate, success state, every error state, `?tour=` preselect, `start_enquiry` and `submit_enquiry`
+- Unit tests: schema, estimate, reference format, reply-by date (EAT working days), email builders (escaping)
+- *Done when:* a real submission from the preview deploy stores a row, both emails arrive (traveller and frank@), and the reference matches across the screen, both emails and the database
+
+### Friday 9 October (ship day)
+
+**S9. Verification (morning)**
+- Playwright: enquiry happy path (email sending stubbed with a test env flag), validation errors, rate limit, every sitemap URL (200, one h1, canonical, noindex), `@axe-core/playwright` on one page of each template, a mobile 360px pass
+- Lighthouse on home, a tour page and plan-your-trip (mobile)
+- Schema Markup Validator on one URL per template, recorded in `docs/research/seo-validation.md`
+- **Re-check the yellow fever rule and UWA figures** (12-fact-register.md flags yellow fever as two days old)
+- Fix list triage: fix what blocks a demo and log the rest
+
+**S10. Ship (early afternoon, stop by 17:00 EAT)**
+- Production env vars confirmed, production migration applied, production deploy
+- Smoke test on `kanyonyi.veilcode.studio`: one real enquiry, a WhatsApp link on mobile, consent accept and reject, `noindex` present
+- Update `docs/decisions/` with anything that changed, and write a short `docs/launch-notes.md` (what shipped, what was cut, known issues)
+
+## What gets cut first if we fall behind
+
+Cut from the top. Each line names what replaces the cut item, so the page still works.
+
+1. **Galleries** on tours and destinations → hero image only (already the minimum set)
+2. **Per-page OG crops** → one site-wide default OG image
+3. **Currency toggle** → USD only. The tooltip copy isn't used
+4. **Month picker interactivity** → a static, accessible 12-row table of the same month notes, with a "Show {Month} trips" link per row
+5. **`?month=` and sort options on /tours** → category chips only
+6. **`schema-dts` types** → plain objects. The forbidden-types unit test stays
+7. **Full Playwright suite** → keep only the enquiry happy path and the sitemap crawl. Run axe on home and one tour page
+8. **Traveller confirmation email HTML** → plain-text email only (the operator notification is already plain text)
+
+**Never cut:** enquiry storage and both emails, the WhatsApp links, `noindex` on the demo, all six tour pages, fact stamps on every page that shows permit or entry facts, demo labelling, keyboard and screen reader basics on the form and nav, mobile layout.
+
+## Risks
+
+| Risk | Mitigation |
+| --- | --- |
+| Resend domain verification or DNS is slow | F4 started Monday. Until it verifies, Resend's test sender only delivers to the account owner's address, which is enough to build and test S8 |
+| Image sourcing takes longer than one session | Minimum 15 images. Galleries are cut first |
+| Content transcription errors (word-for-word rule) | Done once, in a single session, then a side-by-side review of each tour page against the copy file during S9 |
+| Base UI (base-nova) components behave differently from Radix examples | Read each component's generated source before using it. Don't rely on Radix-era APIs (`asChild` becomes `render` in Base UI) |
+| Facts change before launch (yellow fever, UWA 2027 rates) | Re-check in S9. The register and content are updated together |

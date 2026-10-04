@@ -36,7 +36,42 @@ While you wait, two guides most travellers find useful:
 Kanyonyi Expeditions
 Kampala, Uganda
 
-*Footer (demo):* This is a demonstration site built by VeilCode Studio. Kanyonyi Expeditions is a fictional operator. If you received this email after testing the demo, that's the enquiry flow working. → veilcode.studio
+*This version is used on client builds. The demo uses the demo version below.*
+
+### Demo version of Email 1 (when `NEXT_PUBLIC_DEMO_MODE=true`)
+
+- **From name:** Kanyonyi Expeditions (demo by VeilCode Studio)
+- **Reply-to:** frank@veilcode.studio
+- **Subject:** Your demo enquiry ({reference})
+- **Preheader:** This is the confirmation a real traveller would receive. Here's what happens next on a live site.
+
+**Body**
+
+Hello {first name},
+
+You've just tested the enquiry flow on the Kanyonyi Expeditions demo. This email is exactly what a traveller would receive, a minute after pressing "Send enquiry".
+
+| | |
+| --- | --- |
+| Reference | {reference} |
+| Trip | {tour name} |
+| Travel month | {month} ({flexibility}) |
+| Travellers | {n} |
+| Estimated total | {estimate} |
+
+**On a live site, what happens next**
+
+1. The operator's team is notified instantly, with everything above.
+2. The enquiry is saved to their records, so nothing gets lost in an inbox.
+3. Their planner replies with a day-by-day plan and an itemised quote.
+
+**On this demo**
+
+Your enquiry reached VeilCode Studio, the team that built this site. Frank will reply to you personally. If you run a tour company, a clinic, a law firm or any business that takes enquiries online, reply to this email and tell us what you'd want your own site to do.
+
+Frank Tamale
+VeilCode Studio · Kampala
+WhatsApp: +256 750 242627 · veilcode.studio
 
 ---
 
@@ -124,6 +159,7 @@ Note: this is a demonstration website built by VeilCode Studio (https://veilcode
 - [Murchison Falls National Park]({SITE}/destinations/murchison-falls)
 
 ## Planning guides
+- [All guides]({SITE}/guides)
 - [Uganda gorilla permits: prices and rules, 2026 and 2027]({SITE}/guides/uganda-gorilla-permits)
 - [Best time to visit Uganda, month by month]({SITE}/guides/best-time-to-visit-uganda)
 - [What to pack for gorilla trekking and a Uganda safari]({SITE}/guides/what-to-pack-gorilla-trekking-safari)

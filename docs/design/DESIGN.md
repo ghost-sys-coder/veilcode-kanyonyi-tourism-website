@@ -2,7 +2,7 @@
 
 This file is the design source of truth for the build. Section 30 of AGENTS.md says to establish design tokens; these are those tokens. Use them, do not invent new ones.
 
-Visual reference: `docs/design/reference/kanyonyi-reference.html`. Open it in a browser to see the direction. It is a single-file prototype. Where it and this file disagree, this file wins. The known differences are listed in section 10.
+Visual reference: `docs/design/reference/kanyonyi-reference.html`. Open it in a browser to see the direction. It is a single-file prototype. Where it and this file disagree, this file wins. The known differences are listed in section 11.
 
 ---
 
@@ -70,12 +70,31 @@ Paste into `app/globals.css`, replacing the shadcn defaults. The names match sha
 
 Keep shadcn's existing `@theme inline` mappings for the standard variables; add only the brand lines above.
 
-### Usage rules
+**Usage rules**
 
-1. `sun` appears once per viewport, on the single most important action (Enquire, Find trips, Send enquiry). If two sun buttons are visible at once, one of them is wrong.
+1. `sun` appears once per viewport, on the single most important action for that view. On the homepage first view that is **Find trips** (most first-time visitors are still choosing; the header's forest "Plan my trip" serves those who are ready). On tour pages it is **Ask about this trip**; on the enquiry page, **Send enquiry**. If two sun buttons are visible at once, one of them is wrong.
 2. `primary` (forest) is for the second most important action and for links.
 3. `clay` is only for eyebrows and small labels. Never for body text or buttons.
-4. Status colors (success, warning) are separate from brand colors. Use green for success and amber for warnings with an icon and text, never color alone.
+4. Status colors are separate from brand colors and always come with an icon and text, never color alone:
+
+```css
+:root {
+  --success: #1E6B45;            /* 5.8:1 on background */
+  --success-surface: #DDF1E5;    /* text on it: 5.5:1 */
+  --warning: #7A4E00;            /* 6.5:1 on background */
+  --warning-surface: #FBEFD2;    /* text on it: 6.3:1 */
+  --destructive-surface: #FDE8E6;/* --destructive text on it: 5.6:1 */
+}
+@theme inline {
+  --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
+  --color-warning: var(--warning);
+  --color-warning-surface: var(--warning-surface);
+  --color-destructive-surface: var(--destructive-surface);
+}
+```
+
+Use: success for the enquiry confirmation and "Copied"; warning for the 2027 price callout and "low-season permits can't be rescheduled" notes; destructive for form errors.
 
 **Dark mode:** not in scope for the 9 October build. Tourism pages are photography-led and dark mode doubles visual QA. The token structure above allows a `.dark` block later without touching components.
 
@@ -135,7 +154,7 @@ Borders are 1px `--border`. Shadow is used only on: the trip finder bar, hovered
 
 | Level | Style | Example |
 | --- | --- | --- |
-| Primary | sun fill, sun-foreground text, pill | Enquire about this trip |
+| Primary | sun fill, sun-foreground text, pill | Find trips (home hero), Ask about this trip (tour pages), Send enquiry |
 | Secondary | primary (forest) fill, pill | Plan my trip (nav) |
 | Tertiary | outline forest or underlined link | See itinerary |
 | WhatsApp | floating round button bottom right, plus inline text link on tour pages | Chat on WhatsApp |
@@ -159,18 +178,22 @@ The reference's SVG landscape style may be used only for empty states, the 404 p
 
 ---
 
-## 8. Icons and motion
+## 8. Logo
+
+A text logo is right for this build. "Kanyonyi" set in Gloock at 22px, with "EXPEDITIONS · UGANDA" in JetBrains Mono at 10px, letter-spacing 0.14em, beneath it. To its left, the small bird mark from the reference file (forest circle, sun-yellow bird), 36px. Reuse the same mark, simplified to the circle and bird, as the favicon and Apple touch icon. On a client build, the client's own logo replaces both.
+
+## 9. Icons and motion
 
 1. Icons: lucide-react (already a shadcn dependency). 20px default, 1.5 stroke. Icons support labels; they never replace them.
 2. Motion: hover lift on trip cards (translateY -3px, 200ms) and dialog/sheet transitions from shadcn. Nothing else animates on load. Respect `prefers-reduced-motion`.
 
 ---
 
-## 9. Component patterns to keep from the reference
+## 10. Component patterns to keep from the reference
 
 These worked in the prototype and should carry over, built from shadcn primitives:
 
-1. **Trip finder bar** under the hero: Experience, Travel month, Time you have, Find trips. Built with Select and Button. On submit it goes to the tours listing with filters in the URL query, so results are shareable and crawlable.
+1. **Trip finder bar** under the hero: Experience, Travel month, Time you have, Find trips. Built with Select and Button. On submit it goes to the tours listing with filters in the URL query, so results are shareable and crawlable. Experience and length filter the list. Month does not remove tours (every tour runs all year); it shows that month's note above the results, adds a "Good in {Month}" badge to tours whose `bestMonths` include it and sorts them first, and adds a "Cheaper permits" badge to gorilla and chimp tours in April, May and November.
 2. **Trip card:** image, tag badge, mono meta line (days · parks), h3 name, one-sentence description, footer with "From, per person" price and "See itinerary" link. Same anatomy on every card.
 3. **Month picker** for "when to go": 12 bars, dry months in sun, green season lighter, tap shows the month's notes and matching tours. Uses ToggleGroup.
 4. **Permit table:** visitor type, peak price, low-season price, with the source and the date the prices were checked shown under it.
@@ -181,7 +204,7 @@ These worked in the prototype and should carry over, built from shadcn primitive
 
 ---
 
-## 10. Where production differs from the reference
+## 11. Where production differs from the reference
 
 | Reference prototype | Production build | Why |
 | --- | --- | --- |

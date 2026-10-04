@@ -27,6 +27,7 @@ This folder is the approved copy for every page of the build. Place it at `docs/
 | 10-policies.md | Booking terms and privacy notice |
 | 11-emails-and-meta.md | Enquiry emails, page titles, meta descriptions, Open Graph, llms.txt |
 | 12-fact-register.md | Every checked fact, source and date |
+| 13-photo-brief.md | Photo sources, shot list, alt text and credit rules |
 
 ## URL map
 
@@ -44,6 +45,7 @@ This folder is the approved copy for every page of the build. Place it at `docs/
 /destinations/kibale
 /destinations/queen-elizabeth
 /destinations/murchison-falls
+/guides                             Guides index
 /guides/uganda-gorilla-permits
 /guides/best-time-to-visit-uganda
 /guides/what-to-pack-gorilla-trekking-safari

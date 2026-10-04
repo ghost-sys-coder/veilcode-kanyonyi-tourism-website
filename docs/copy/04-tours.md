@@ -24,6 +24,19 @@
 
 ---
 
+## Price model (used by the price tables and the enquiry estimate)
+
+Each tour has two numbers: `perPersonCostUSD` (permits, park fees, lodges, meals, activities: costs every traveller adds) and `perVehicleCostUSD` (vehicle, fuel, guide and flights shared by everyone in one vehicle). A vehicle carries at most six guests.
+
+```
+vehicles      = ceil(travellers / 6)
+pricePerPerson = perPersonCostUSD + (perVehicleCostUSD × vehicles) / travellers
+```
+
+Round to the nearest USD 10. A solo traveller also pays the single room supplement. Tours with gorilla permits subtract USD 200 per person for April, May and November 2026 dates. The 2, 4 and 6 traveller rows in each price table come from this formula; the estimate covers every group size from 1 to 12 the same way.
+
+Worked check, 3-Day Bwindi Gorilla Trek: 1 traveller $2,110 + $140 single supplement · 3 travellers $1,500 · 5 travellers $1,370 · 7 travellers (two vehicles) $1,450 · 12 travellers $1,340.
+
 ## How each tour page is laid out
 
 1. Hero: tag, H1 (tour name), summary line, key facts strip, price box with "Ask about this trip"
@@ -43,6 +56,10 @@ Fields marked `Field:` map to the tour content type.
 ## Tour 1: 3-Day Bwindi Gorilla Trek
 
 - Field: slug: `3-day-bwindi-gorilla-trek`
+- Field: perPersonCostUSD: 1190
+- Field: perVehicleCostUSD: 920
+- Field: bestMonths: January, February, June, July, August, September, December
+- Field: includesPrimatePermits: yes
 - Field: name: 3-Day Bwindi Gorilla Trek
 - Field: category: Gorillas and chimps
 - Field: tag: Most booked
@@ -113,7 +130,7 @@ An early start for the drive back, with a stop at the Equator line at Kayabwe fo
 | --- | --- | --- |
 | 2 travellers | $1,650 | $1,450 |
 | 4 travellers | $1,420 | $1,220 |
-| 6 travellers | $1,330 | $1,130 |
+| 6 travellers | $1,340 | $1,140 |
 | Single room supplement | $140 | $140 |
 
 Discounted April, May and November permits are fixed to their date and can't be rescheduled by the park.
@@ -144,6 +161,10 @@ Yes, add a night and a second permit. Many people find the second hour with a di
 ## Tour 2: 4-Day Murchison Falls Safari
 
 - Field: slug: `4-day-murchison-falls-safari`
+- Field: perPersonCostUSD: 730
+- Field: perVehicleCostUSD: 920
+- Field: bestMonths: January, February, June, July, August, September, December
+- Field: includesPrimatePermits: no
 - Field: name: 4-Day Murchison Falls Safari
 - Field: category: Savannah wildlife
 - Field: tag: Big game
@@ -242,6 +263,10 @@ Yes. It's one of our best family trips: short walks, boat trips and big animals,
 ## Tour 3: 4-Day Kibale Chimps and Queen Elizabeth
 
 - Field: slug: `4-day-kibale-chimps-and-queen-elizabeth`
+- Field: perPersonCostUSD: 1020
+- Field: perVehicleCostUSD: 920
+- Field: bestMonths: January, February, June, July, August, September, October, December
+- Field: includesPrimatePermits: yes
 - Field: name: 4-Day Kibale Chimps and Queen Elizabeth
 - Field: category: Gorillas and chimps · Savannah wildlife
 - Field: tag: Primates and plains
@@ -334,6 +359,10 @@ Yes. The chimpanzee habituation experience gives you most of a day with a commun
 ## Tour 4: 7-Day Primates and Savannah
 
 - Field: slug: `7-day-primates-and-savannah`
+- Field: perPersonCostUSD: 2590
+- Field: perVehicleCostUSD: 1720
+- Field: bestMonths: January, February, June, July, August, September, December
+- Field: includesPrimatePermits: yes
 - Field: name: 7-Day Primates and Savannah
 - Field: category: Gorillas and chimps · Savannah wildlife
 - Field: tag: Best first trip
@@ -435,6 +464,10 @@ Yes. Add a night in Bwindi and a second permit.
 ## Tour 5: 10-Day Classic Uganda
 
 - Field: slug: `10-day-classic-uganda`
+- Field: perPersonCostUSD: 3610
+- Field: perVehicleCostUSD: 2680
+- Field: bestMonths: January, February, June, July, August, September, December
+- Field: includesPrimatePermits: yes
 - Field: name: 10-Day Classic Uganda
 - Field: category: Gorillas and chimps · Savannah wildlife
 - Field: tag: The full country
@@ -541,6 +574,10 @@ Yes to both. Lake Mburo adds zebra, eland and walking safaris; a second trek add
 ## Tour 6: 2-Day Jinja and the Nile
 
 - Field: slug: `2-day-jinja-and-the-nile`
+- Field: perPersonCostUSD: 300
+- Field: perVehicleCostUSD: 240
+- Field: bestMonths: All months
+- Field: includesPrimatePermits: no
 - Field: name: 2-Day Jinja and the Nile
 - Field: category: Nile and adventure
 - Field: tag: Weekend
@@ -591,7 +628,7 @@ Safety briefing and practice in calm water, then a day on the White Nile below J
 | --- | --- |
 | 2 travellers | $420 |
 | 4 travellers | $360 |
-| 6 travellers | $330 |
+| 6 travellers | $340 |
 | Single room supplement | $60 |
 | Residents (UGX) | Ask us for a shilling price |
 

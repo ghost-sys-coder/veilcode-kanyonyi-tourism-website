@@ -1,5 +1,18 @@
 # Travel guides
 
+## Guides index (/guides)
+
+**Eyebrow:** Planning guides
+**H1:** Uganda travel guides
+**Intro:** The three questions that shape every Uganda trip: how gorilla permits work, when to go, and what to bring. Each guide is checked against official sources and dated.
+
+Cards (one per guide): eyebrow "Guide · Updated {date}", title, card line, link "Read the guide".
+
+**Bottom call to action:** Still have questions? **Chat on WhatsApp** · or see the **FAQ**
+
+Meta title: Uganda Travel Guides: Permits, Seasons, Packing | Kanyonyi
+Meta description: Practical guides for planning a Uganda trip: gorilla permit prices and rules, the best time to visit month by month, and what to pack.
+
 Each guide is an Article (Schema.org) with author "Kanyonyi Expeditions planning team", datePublished 4 October 2026 and dateModified set from the content file. Show "Updated {date}" under the H1.
 
 ---

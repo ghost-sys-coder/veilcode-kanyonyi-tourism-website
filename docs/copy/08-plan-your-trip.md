@@ -11,6 +11,12 @@
 2. Within one working day you receive a plan and an itemised quote by email, plus a WhatsApp message so you can reply however suits you.
 3. We adjust it until it's right. Most trips take two or three rounds.
 
+**Demo version of this panel** (when `NEXT_PUBLIC_DEMO_MODE=true`):
+**This is a working demo**
+1. Send the form and you'll get the same branded confirmation email a traveller would, within a minute.
+2. The enquiry is saved and reaches VeilCode Studio, the team that built this site.
+3. Frank from VeilCode will reply personally, about the demo or about a website like this for your business.
+
 **Prefer to talk?** Chat on WhatsApp · [number]
 **Hours:** Monday to Saturday, 8am to 8pm Kampala time (EAT, UTC+3)
 
@@ -32,10 +38,12 @@ Only what we need to quote. Fields in this order:
 | notes | Anything else we should know? | Textarea | No | Placeholder: "Celebrating something? Prefer to fly rather than drive? Mobility needs, food allergies, a lodge you have in mind?" |
 | consent | (checkbox) | Checkbox | Yes | "I agree that Kanyonyi can use these details to reply to my enquiry, as described in the privacy notice." |
 
-**Live estimate box** (updates with tour and travellers):
+**Live estimate box** (updates with tour and travellers; calculated with the price model in 04-tours.md):
 - Label: Estimated total
 - Value: {total} for {n} travellers
-- Small text: "Based on standard-season prices for travel until 31 December 2026. Your quote will confirm the exact price." For "Something custom": "We'll price your custom trip in your quote."
+- Small text: "Based on standard-season prices for travel until 31 December 2026, with rooms shared. Your quote will confirm the exact price." For "Something custom": "We'll price your custom trip in your quote."
+- Solo traveller line: "Includes the single room supplement."
+- Seven or more travellers line: "Groups of seven or more travel in two vehicles, each with its own guide."
 
 **Submit button:** Send enquiry · while sending: Sending…
 
@@ -55,5 +63,11 @@ Only what we need to quote. Fields in this order:
 3. You tell us what to change. No payment until you're happy.
 
 **Buttons:** Read the gorilla permit guide · Chat on WhatsApp now
+
+**Demo version of the success state:**
+**Eyebrow:** Enquiry received
+**H2:** That's the enquiry flow working, {first name}.
+**Body:** Your reference is **{KX-1234}**, and a confirmation email is on its way to {email}. On a live site, the operator's team now gets the enquiry and replies with a plan and a quote. On this demo it reached VeilCode Studio, and Frank will reply to you personally.
+**Buttons:** See who built this (→ https://veilcode.studio) · Chat with VeilCode on WhatsApp
 
 **If the confirmation email might not arrive:** Didn't get our email in 10 minutes? Check your spam folder, or message us your reference on WhatsApp.

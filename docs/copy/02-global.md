@@ -58,7 +58,7 @@ Company
 - Privacy → /privacy
 
 Contact
-- WhatsApp: [CLIENT: +256 700 000 000] (demo: the VeilCode Studio number from config)
+- WhatsApp: +256 750 242627 (from `NEXT_PUBLIC_WHATSAPP_NUMBER`; on a client build, the client's number)
 - Email: replies come from our team within one working day (demo: no public mailbox is shown)
 - Office: [CLIENT: Plot 00, Kololo, Kampala] (demo: shown as "Kololo, Kampala (sample address)")
 - Hours: Monday to Saturday, 8am to 8pm EAT
@@ -101,7 +101,11 @@ Contact
 | 2 | When are you travelling? | Any month · then the next 12 months, e.g. "November 2026" |
 | 3 | How much time do you have? | Any length · Up to 3 days · Up to 5 days · Up to a week · More than a week |
 
-Button: Find trips
+Button: Find trips (the sun-yellow primary action on the homepage)
+
+**How the month works:** month never removes tours, because every tour runs all year. On the results page it shows the month's note from the homepage month table above the grid, adds a **Good in {Month}** badge to tours whose `bestMonths` include that month (sorted first), and in April, May and November adds a **Cheaper permits** badge to tours that include gorilla or chimp permits.
+
+**Results note when a month is chosen:** {Month}: {month note}
 
 ## Cookie and consent banner
 
@@ -120,6 +124,35 @@ Footer link label: Cookie settings
 - Network failure: "Your enquiry didn't send. Check your connection and try again. If it keeps failing, message us on WhatsApp and we'll pick it up from there."
 - Server failure: "Something went wrong on our side and your enquiry didn't send. Please try again in a minute, or message us on WhatsApp."
 - Rate limit: "You've sent several enquiries in a short time. Please wait a few minutes, or message us on WhatsApp."
+
+## Interface strings
+
+| Where | String |
+| --- | --- |
+| Skip link (first focusable element) | Skip to main content |
+| Breadcrumb root | Home |
+| Breadcrumb section labels | Tours · Destinations · Guides |
+| Breadcrumb landmark label (screen readers) | Breadcrumb |
+| Main navigation landmark label | Main |
+| Footer navigation landmark label | Footer |
+| Back to top link (long pages) | Back to top |
+| Tour page "on this page" nav heading | On this page |
+| Tour page section anchors | Overview · Day by day · Included · Prices · Good to know · Questions |
+| Guide "jump links" heading | In this guide |
+| "Updated" stamp on guides | Updated {d Month yyyy} |
+| Price label on cards | From, per person sharing |
+| Low-season price label | April, May and November dates |
+| Badge, month match | Good in {Month} |
+| Badge, low-season permits | Cheaper permits |
+| Days and nights | {d} days · {n} nights |
+| Image credit (caption) | Photo: {photographer} / {source} |
+| External link suffix (screen readers) | (opens in a new tab) |
+| Loading state for tour grid | Loading trips… |
+| Currency toggle label (screen readers) | Show prices in |
+| Dialog close button | Close |
+| Copy confirmation | Copied |
+
+If the build needs a string not listed here or elsewhere in the copy deck, use the closest existing one and list the gap in your session summary.
 
 ## Empty states
 

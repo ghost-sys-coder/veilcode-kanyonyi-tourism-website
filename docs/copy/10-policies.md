@@ -10,7 +10,9 @@
 **Updated:** 4 October 2026
 
 **1. Who you're booking with**
-Kanyonyi Expeditions [CLIENT: legal name, registration number, address]. "We" and "us" mean Kanyonyi; "you" means the person making the booking and everyone travelling on it.
+[CLIENT: legal name, registration number, address]. "We" and "us" mean the operator; "you" means the person making the booking and everyone travelling on it.
+
+*Demo version:* Kanyonyi Expeditions is a fictional operator created by VeilCode Studio to demonstrate this website. No bookings or payments are taken on this site. These terms show how a live operator's terms would be presented.
 
 **2. Your quote**
 Quotes are valid for 14 days. Permit fees, park fees and flight prices are set by others and can change before they're paid; if they change before your booking is confirmed, we'll tell you before you pay.
@@ -80,3 +82,23 @@ You can ask to see, correct or delete the personal data we hold about you, or ob
 
 **Contact**
 [CLIENT: data protection contact email and postal address]
+
+*Demo version (replaces "What we collect" through "Contact" when `NEXT_PUBLIC_DEMO_MODE=true`):*
+
+**Who holds your data on this demo**
+Kanyonyi Expeditions is fictional, but the enquiry form works. If you send it, your details are received and stored by VeilCode Studio, the Kampala web studio that built this site, which is responsible for them.
+
+**What we collect and why**
+The details you type into the form, so we can send the confirmation email and reply to you. We don't sell them or add you to a mailing list.
+
+**Analytics**
+With your consent only, Google Analytics, to see how the demo is used. Change your choice any time from "Cookie settings" in the footer.
+
+**How long we keep it**
+12 months, then deleted. Ask us to delete it sooner and we will.
+
+**Your rights**
+You can ask to see, correct or delete your data. Uganda's Data Protection and Privacy Act, 2019 applies, and if you're in the UK or EU you also have rights under data protection law there.
+
+**Contact**
+VeilCode Studio · frank@veilcode.studio · Kampala, Uganda

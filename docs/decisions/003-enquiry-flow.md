@@ -1,0 +1,269 @@
+# 003: Enquiry flow
+
+**Status:** Proposed (Phase 01, 4 October 2026)
+**Applies to:** Phase 05
+
+## Context
+
+The site is built around enquiries. The brief's conversion priority is tour enquiry first, then WhatsApp click, then custom itinerary request. The form fields, microcopy, success state and both emails are fixed by 08-plan-your-trip.md, 02-global.md and 11-emails-and-meta.md. The brief also decides the stack: Neon Postgres for storage, Resend from a verified sending subdomain, two emails per enquiry, reply-to frank@veilcode.studio, and no `kanyonyi` mailbox anywhere.
+
+## Decision
+
+### 1. Server Action, not a Route Handler
+
+`features/enquiries/actions/submit-enquiry.ts` (`"use server"`) is called from the form through React's `useActionState`.
+
+Reasons:
+
+- The form is only submitted from this site. A Server Action gives progressive enhancement (the form posts without JavaScript), typed returns, and built-in Origin and Host checking for CSRF.
+- A Route Handler would only be needed for third-party callers (for example a CRM webhook). There are none in scope.
+
+The action is the single entry point. The logic underneath is plain functions that can be tested without Next.js:
+
+```text
+features/enquiries/
+  schema.ts                 Zod schema (shared by client and server)
+  options.ts                Month list builder, residency and flexibility options
+  estimate.ts               estimateTotal(), re-exported from lib/content/pricing.ts
+  reference.ts              formatReference(seq) -> "KX-1001"
+  actions/submit-enquiry.ts Orchestration only
+  services/
+    enquiry-repository.ts   insertEnquiry(), countRecentByIpHash()
+    enquiry-emails.ts       buildTravellerEmail(), buildOperatorEmail()
+    rate-limit.ts           isRateLimited(ipHash)
+  components/
+    enquiry-form.tsx        "use client" (the form, useActionState)
+    enquiry-estimate.tsx    "use client" (live estimate)
+    traveller-stepper.tsx   "use client" (1 to 12)
+    enquiry-success.tsx     Success state
+    enquiry-side-panel.tsx  Server component
+services/email/resend.ts    sendEmail() over Resend's REST API
+db/schema.ts, db/client.ts, db/migrations/
+```
+
+### 2. Zod schema
+
+This mirrors the table in 08-plan-your-trip.md exactly: the same order, required flags and options. Error messages come from `content/ui.ts` (02-global.md form microcopy).
+
+```ts
+// features/enquiries/schema.ts
+import { z } from "zod";
+
+export const TOUR_CUSTOM = "custom" as const;
+export const MONTH_NOT_SURE = "not-sure" as const;
+
+export const enquirySchema = z.object({
+  tour: z.enum([...tourSlugs, TOUR_CUSTOM], { error: req("which trip") }),
+  travelMonth: z.union([
+    z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),   // checked against the rolling 18-month window server side
+    z.literal(MONTH_NOT_SURE),
+  ], { error: req("travel month") }),
+  flexibility: z.enum(["fixed", "week-or-two", "any-time-that-month"]).optional(),
+  travellers: z.coerce.number().int().min(1).max(12),
+  anyoneUnder15: z.enum(["no", "yes"]).optional(),
+  residency: z.enum(["outside-east-africa", "east-africa"], { error: req("country of residence") }),
+  name: z.string().trim().min(1, req("name")).max(120),
+  email: z.email({ error: "Enter an email address like name@example.com." }).max(254),
+  whatsapp: z.string().trim().max(32)
+    .regex(/^\+?[0-9 ()-]{7,}$/, { error: "Include your country code, for example +44 or +256." })
+    .optional().or(z.literal("")),
+  notes: z.string().trim().max(2000).optional(),
+  consent: z.literal("on", { error: req("agreement to the privacy notice") }),
+
+  // Not shown to the user
+  website: z.string().max(0).optional(),           // honeypot; see section 5
+  sourcePath: z.string().max(200).startsWith("/"), // page the enquiry started from
+  utmSource: z.string().max(100).optional(),
+  utmMedium: z.string().max(100).optional(),
+  utmCampaign: z.string().max(100).optional(),
+});
+// req(field) => `Please add your ${field}.` (02-global.md generic required error)
+```
+
+**Copy gap:** the generic error template "Please add your {field name}." reads badly for selects and the consent box ("Please add your which trip"). I've used the nearest wording above (`which trip`, `travel month`, `country of residence`, `agreement to the privacy notice`). These are gaps for Frank to approve; see docs/plan.md.
+
+The same schema validates on the client (on blur and on submit, for instant messages) and on the server (authoritative). Zod's issues are mapped to `{ fieldErrors: Record<field, string> }`. The form renders them with `aria-invalid`, `aria-describedby` and text, never colour alone, and moves focus to the first invalid field.
+
+### 3. Neon table design and migrations
+
+**Access layer:** Drizzle ORM over `@neondatabase/serverless` (HTTP driver, so there is no connection pool to manage on Vercel functions), with drizzle-kit for migrations.
+
+```ts
+// db/schema.ts
+export const enquiryRefSeq = pgSequence("enquiry_ref_seq", { startWith: 1001 });
+
+export const enquiries = pgTable("enquiries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  reference: text("reference").notNull().unique(),          // "KX-1001"
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+
+  tourSlug: text("tour_slug"),                              // null = "Something custom"
+  travelMonth: date("travel_month"),                        // first of month; null = not sure
+  flexibility: text("flexibility"),
+  travellers: smallint("travellers").notNull(),
+  anyoneUnder15: boolean("anyone_under_15"),
+  residency: text("residency").notNull(),
+
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  whatsapp: text("whatsapp"),
+  notes: text("notes"),
+  consentAt: timestamp("consent_at", { withTimezone: true }).notNull(),
+
+  estimateUsd: integer("estimate_usd"),                     // null for custom
+  sourcePath: text("source_path").notNull(),
+  utmSource: text("utm_source"),
+  utmMedium: text("utm_medium"),
+  utmCampaign: text("utm_campaign"),
+
+  ipHash: text("ip_hash").notNull(),                        // HMAC-SHA256(ip, IP_HASH_SECRET)
+  travellerEmailStatus: text("traveller_email_status").notNull().default("pending"), // pending|sent|failed
+  operatorEmailStatus: text("operator_email_status").notNull().default("pending"),
+  status: text("status").notNull().default("new"),          // new|quoted|booked|lost (for later)
+}, (t) => [
+  index("enquiries_created_at_idx").on(t.createdAt),
+  index("enquiries_ip_hash_created_at_idx").on(t.ipHash, t.createdAt),
+  check("travellers_range", sql`${t.travellers} between 1 and 12`),
+  check("residency_values", sql`${t.residency} in ('outside-east-africa','east-africa')`),
+]);
+```
+
+Notes on the design:
+
+- **Reference** comes from a Postgres sequence: `'KX-' || nextval('enquiry_ref_seq')`, set in the same `INSERT ... RETURNING`. It is unique, needs no retry loop and matches the copy's `KX-1234` format. It reveals approximate volume, which is acceptable because the reference grants no access to anything.
+- **`tour_slug` is text, not a foreign key**, because tours live in files and not in the database (001). If tours move to the database, this becomes a foreign key in that migration. The column name already fits.
+- **Attribution columns** (`source_path`, `utm_*`) answer AGENTS.md section 26 ("which traffic sources produce enquiries") from the database. That matters because GA4 under consent misses everyone who rejects analytics cookies.
+- **The raw IP is never stored.** A keyed hash is enough for rate limiting and can't be reversed without the secret.
+- **Retention:** the demo privacy notice promises **12 months, then deleted** (the live notice says 24 months for enquiries that don't become bookings). Phase 05 adds `npm run db:purge` (`DELETE FROM enquiries WHERE created_at < now() - interval '12 months'`) and the plan records that it must be scheduled before the first rows reach 12 months (October 2027), for example with a Vercel cron. Deletion requests in the meantime are handled by hand in Neon.
+
+**Migrations:** `drizzle-kit generate` writes SQL to `db/migrations/`. Those files are committed and reviewed. `drizzle-kit migrate` is run manually against Neon (`npm run db:migrate`), not inside `next build`, so a failed build never leaves a half-migrated database. Per AGENTS.md section 0 (default 6): local `.env.local` and Vercel previews use the `dev` branch; only Vercel production uses `main`. Migrations run on `dev` first, then on `main` once verified. Local development never points at `main`.
+
+### 4. Submit sequence
+
+```text
+1. Parse FormData -> zod.safeParse            fail -> { status: "invalid", fieldErrors }
+2. Honeypot filled?                            yes  -> { status: "success", reference: fake } (no DB, no email)
+3. ipHash = HMAC(x-forwarded-for first hop)
+4. Rate limit: >= 3 enquiries from ipHash in the last 10 minutes
+                                               yes  -> { status: "rate_limited" }
+5. Compute estimate on the server (never trust a client figure)
+6. INSERT ... RETURNING reference              fail -> log, { status: "server_error" }
+7. Send both emails in parallel (Promise.allSettled, 8s timeout each, Resend Idempotency-Key = reference)
+8. UPDATE email status columns                 email failures are logged, not shown to the user
+9. Return { status: "success", reference, firstName, email, tourName, monthLabel }
+```
+
+- Emails are awaited in the request and not deferred with `after()`. The form already shows "Sending…", and an extra second is a fair price for knowing the delivery status when the action returns. That status is persisted, so a failed operator notification is visible in the database. A deferred send can fail silently after the response has gone.
+- **Database down:** the user sees the copy's server failure message, which points to WhatsApp, so the lead still has a route. A best-effort operator email with the raw enquiry is **not** sent. It would create a second, unreferenced record path, and that complexity isn't justified for a demo.
+- **Duplicate submission:** the button is disabled while pending (`useActionState` gives `isPending`), and on success the form is replaced by the success state. Server-side deduplication isn't needed beyond the rate limit.
+
+### 5. Spam protection
+
+- **Honeypot:** a text input named `website`, wrapped in a container with `position:absolute; left:-10000px`, plus `aria-hidden="true"`, `tabindex="-1"` and `autocomplete="off"`. It is not `display:none`, which some bots detect. If it's filled, the action returns a normal-looking success so bots get no signal.
+- **Rate limit:** 3 per 10 minutes per IP hash, counted on the `enquiries` table using the `(ip_hash, created_at)` index. This needs no Redis, no Upstash account and no extra dependency. At demo volume one indexed count query is cheap. Revisit with Upstash only if traffic justifies it.
+- **No CAPTCHA**, per 08-plan-your-trip.md, unless abuse appears.
+- Input lengths are capped in Zod. Notes are rendered into email HTML only after HTML-escaping.
+
+### 6. Emails (Resend)
+
+| | Traveller confirmation | Operator notification |
+| --- | --- | --- |
+| From | Address from `EMAIL_FROM`. Display name from content: "Kanyonyi Expeditions (demo by VeilCode Studio)" in demo mode, "Kanyonyi Expeditions" otherwise | Same address, display name "Kanyonyi enquiries" |
+| Copy used | Demo mode: "Demo version of Email 1" (subject "Your demo enquiry ({reference})"). Live: Email 1 | Email 2 in both modes |
+| To | the traveller | `ENQUIRY_NOTIFY_TO` (frank@veilcode.studio) |
+| Reply-to | `EMAIL_REPLY_TO` (frank@veilcode.studio) | the traveller's email, so Frank can reply directly |
+| Subject | `Your Uganda trip enquiry ({reference})` | `New enquiry {reference}: {tour name}, {month}, {n} travellers` |
+| Body | 11-emails-and-meta.md, HTML + plain text, demo footer | Plain text, fixed-width block exactly as in the copy |
+
+- `EMAIL_FROM` is parsed for the address only, because the display name changes with demo mode. The address's domain must be verified in Resend. **On 4 October 2026 only `veilcode.studio` was verified, while `EMAIL_FROM` uses `mail.veilcode.studio`.** Resend verifies each subdomain separately, so `mail.veilcode.studio` must be added and verified (the brief requires a subdomain to protect the root domain's reputation). `config/env.ts` rejects any From address containing `kanyonyi`.
+- The HTML is built by `features/enquiries/services/enquiry-emails.ts` as table-based markup with inline styles, using the brand tokens as literal hex values (email clients don't support CSS variables). A plain-text part is always included.
+- **"Reply by: {date + 1 working day}"** in the operator email is computed in `Africa/Kampala` time. Working days are Monday to Saturday, matching the hours in the copy. Sunday rolls to Monday.
+- `{estimate}` in the traveller email: `USD 3,300` for tours. **Copy gap:** the copy gives no wording for "Something custom". I'll use the form's existing line "We'll price your custom trip in your quote." and list it as a gap.
+- The guide links in the traveller email are absolute URLs built from `NEXT_PUBLIC_SITE_URL`.
+- No address or mailbox containing `kanyonyi` is used anywhere. Env values are validated at startup to make sure of it.
+
+### 7. Live estimate
+
+`estimateTotal(tour, travellers)` = `pricePerPerson(tour, travellers)` × travellers, plus the single room supplement when travellers = 1. It uses the 04-tours.md price model (001), at standard season only, as the small print says. Example: tour 1 for 3 travellers is $1,500 × 3 = $4,500.
+
+Extra lines from 08-plan-your-trip.md: "Includes the single room supplement." when travellers = 1, and "Groups of seven or more travel in two vehicles, each with its own guide." when travellers ≥ 7. "Something custom" shows no figure, just the custom line.
+
+It is labelled "Estimated total", with the copy's small print, and the quote confirms the exact price. It is shown as `$3,300` (compact UI format per 01-voice.md) and follows the currency toggle.
+
+### 8. Analytics events (GA4, section 25 names only)
+
+| Event | Fired when | Params | Key event |
+| --- | --- | --- | --- |
+| `start_enquiry` | First focus or change in the form (once per page view) | `tour_slug`, `source_path` | |
+| `submit_enquiry` | Action returns `success` (not for the honeypot) | `tour_slug`, `travellers`, `value` (estimate), `currency: "USD"`, `residency` | ✔ |
+| `whatsapp_click` | Any WhatsApp link or button | `location` (`floating`, `header_menu`, `tour_page`, `success`, `plan_page`, `closing_cta`), `tour_slug?` | ✔ |
+| `check_availability` | "Check permit availability" buttons | `source_path` | |
+| `tour_view` / `destination_view` | Page view on those templates | `tour_slug` / `destination_slug` | |
+| `view_itinerary` | "See itinerary" card click | `tour_slug`, `list` (`home`, `tours`, `destination`) | |
+| `tour_search` | Trip finder submit | `experience`, `month`, `length` | |
+| `tour_filter` | Filter chip or sort change on /tours | `filter`, `value` | |
+
+`phone_click` and `email_click` aren't used: there is no phone link and no public mailbox. Errors (`invalid`, `rate_limited`, `server_error`) aren't GA events. They are logged on the server, and the drop between `start_enquiry` and `submit_enquiry` shows abandonment.
+
+Events go through one typed `lib/analytics/track.ts` (`track<E extends EventName>(name, params)`). It does nothing until consent is granted, so components never touch `gtag` directly. Consent and loading are covered in 004.
+
+### 9. Error and state matrix
+
+| State | UI (copy from 02-global.md / 08-plan-your-trip.md) |
+| --- | --- |
+| Field invalid | Inline message under the field and focus moved to the first error. Summary announced through an `aria-live` region |
+| Sending | Button label "Sending…", disabled, `aria-busy` on the form |
+| Network failure (fetch throws on the client) | "Your enquiry didn't send. Check your connection and try again…" with the WhatsApp link |
+| Server failure | "Something went wrong on our side and your enquiry didn't send…" |
+| Rate limited | "You've sent several enquiries in a short time…" |
+| Success (demo mode) | Demo success state from 08-plan-your-trip.md ("That's the enquiry flow working, {first name}.", with "See who built this" and "Chat with VeilCode on WhatsApp"). The side panel also uses its demo version |
+| Success (live) | The form is replaced by the success state, with `KX-xxxx`, next steps, the two buttons and the spam-folder line. Focus moves to the success heading |
+| Arrived from a tour page | `?tour=slug` preselects the trip. An unknown slug is ignored |
+
+Logging: `console.error` with `{ reference?, stage, errorName }`, which Vercel captures. Never log the name, email, phone or notes.
+
+### 10. Environment variables
+
+Names follow `env.example` (added 4 October 2026).
+
+| Var | Scope | Purpose | Status |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | server | Neon pooled string, used by the app | Set |
+| `DATABASE_URL_UNPOOLED` | migrations only | Direct connection for `drizzle-kit migrate` | **Missing from `.env`** |
+| `NEXT_PUBLIC_SITE_URL` | public | Canonicals, emails, llms.txt | Set |
+| `NEXT_PUBLIC_DEMO_MODE` | public | Demo bar, noindex, demo copy variants (002 section 2) | Set |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | public | Digits only, for wa.me links | Set |
+| `RESEND_API_KEY` | server | Resend | Set |
+| `EMAIL_FROM` | server | Full From header: `Kanyonyi Expeditions <enquiries@mail.veilcode.studio>` | Set |
+| `EMAIL_REPLY_TO` | server | frank@veilcode.studio | Set |
+| `ENQUIRY_NOTIFY_TO` | server | frank@veilcode.studio | Set |
+| `IP_HASH_SECRET` | server | HMAC key, 32+ random bytes | **Not in `env.example` yet.** Added in S8 |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | public | GA4 | Set |
+
+`.env` is git-ignored (`.env*`). `env.example` has no leading dot, so it isn't caught by that pattern and can be committed. `config/env.ts` validates the server variables with Zod once, on first import, and fails loudly.
+
+### 11. Dependencies (AGENTS.md section 35)
+
+| Package | Type | Why it's needed | Platform/shadcn alternative? | Cost / risk |
+| --- | --- | --- | --- | --- |
+| `zod` | dep | Shared client and server schema validation (section 24). Already in `node_modules` at 4.6.5 as a transitive dependency of shadcn, but must be a direct dependency to be relied on | None built in | ~13 kB gzip on the client for the form route only. Very widely maintained |
+| `drizzle-orm` | dep | Typed queries, schema as code (section 2 asks for a typed access layer and migrations) | Raw SQL with the Neon driver would work for one table, but loses typed rows and migration generation | Server only, so no bundle cost. Actively maintained |
+| `@neondatabase/serverless` | dep | Neon's official driver for serverless (HTTP or WebSocket) | `pg` needs connection pooling on Vercel functions | Server only |
+| `drizzle-kit` | devDep | Generates and applies SQL migrations | Hand-written SQL plus a runner script | Dev only |
+| `vitest`, `@vitejs/plugin-react`, `jsdom`, `@testing-library/react`, `@testing-library/dom` | devDep | Unit and component tests (brief default 5) | None | Dev only |
+| `@playwright/test`, `@axe-core/playwright` | devDep | E2E and accessibility checks (brief default 5) | None | Dev only. Browsers are downloaded separately |
+| `schema-dts` | devDep | Types for JSON-LD builders | Hand-typed objects | Types only, zero runtime. **Cut first** if anyone objects |
+
+**Not added, by decision:**
+
+- **`resend` SDK:** sending is one authenticated `POST https://api.resend.com/emails` with an `Idempotency-Key` header. A 30-line `fetch` wrapper in `services/email/resend.ts` covers it and keeps the client bundle and lockfile clean.
+- **`react-email` / `@react-email/*`:** two emails, written once as escaped template functions.
+- **`react-hook-form`:** `useActionState` plus Zod covers validation, pending and error states. The installed shadcn style (base-nova) uses the `Field` components, which don't need it.
+- **`@next/third-parties`:** GA plus Consent Mode v2 needs a consent default set *before* gtag loads. Two `next/script` tags do that directly (see 004).
+- **Upstash / Redis:** the rate limit runs on Postgres (section 5).
+
+## Consequences
+
+- An enquiry counts as successful once it is stored, even if an email fails. Frank should check `operator_email_status = 'failed'` rows, either with a saved Neon query or a weekly look, until there is an admin view.
+- A rate limit stored in Postgres adds one query per submission. That is fine at demo and small-operator scale.
+- Everything needed to answer "which pages and sources produce enquiries" sits in one table, independent of cookie consent.

@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json

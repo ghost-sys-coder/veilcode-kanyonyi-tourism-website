@@ -12,8 +12,8 @@ Sections in order. Each section's purpose is noted for the agent; do not render 
 **H1:** Private gorilla treks and safaris in Uganda
 **Lede:** Groups of up to six. One driver-guide from Entebbe arrivals to your flight home. Quotes that show every permit, park fee and lodge as its own line, so you can see exactly what you are paying for.
 
-**Primary button:** Plan my trip
-**Secondary link:** See all tours
+**No button in the hero itself.** The trip finder directly below is the hero's one primary action (sun yellow "Find trips"). Under the lede, a text link only:
+**Text link:** Already know your dates? Tell us and we'll plan it → /plan-your-trip
 
 **Hero image alt (example):** A silverback mountain gorilla resting among green undergrowth in Bwindi Impenetrable Forest.
 
