@@ -82,7 +82,7 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 
 ### Wednesday 7 October
 
-**S5. Tours (Phase 04)**
+**S5. Tours (Phase 04)**: done 4 October 2026, branch `s5-tours`
 - `trip-card`, `trip-grid`, `price` (dual currency), `key-facts-strip`, `at-a-glance`, `itinerary-day`, `inclusion-list`, `fact-stamp`, `close-cta`
 - `/tours/[slug]` (all nine sections in order, TouristTrip and FAQPage JSON-LD, breadcrumbs, related links, `tour_view`)
 - `/tours` with `tour-filters` (chips, sort, `?experience`, `?length`, `?month`), the results line, the empty state, the price note, the 2027 callout and the ItemList JSON-LD

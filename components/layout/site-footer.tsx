@@ -49,7 +49,7 @@ export function SiteFooter() {
               {waHref && whatsappDisplay ? (
                 <li>
                   WhatsApp:{" "}
-                  <WhatsAppLink href={waHref} location="footer" className={`${linkClass} font-mono`}>
+                  <WhatsAppLink href={waHref} location="footer" className={`${linkClass} font-mono whitespace-nowrap`}>
                     {whatsappDisplay}
                   </WhatsAppLink>
                 </li>
