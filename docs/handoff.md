@@ -1,6 +1,6 @@
 # Handoff: Kanyonyi Expeditions showcase build
 
-**Updated:** Sunday 4 October 2026, through S8 implementation and preview checks, for the next coding agent.
+**Updated:** Sunday 4 October 2026, through S8 acceptance and production setup, for the next coding agent.
 **Deadline:** Friday 9 October 2026, hard stop (AGENTS.md section 0).
 
 **S6 update:** 4 October 2026, Codex. Merged into `master` as PR #6. **S7 update:** full homepage completed on `s7-home`, merged in PR #7. MemPalace MCP tools were not available, so this document and the decision records carry the session notes.
@@ -18,8 +18,8 @@ Read in this order before writing code:
 
 ## 1. Where things stand
 
-Sessions S1 to S7 are done and merged into `master` (PRs #1 to #7, including the handoff PR).
-S8 is implemented on `s8-enquiries`: [draft PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/8), commit `029963e`. The protected preview passes authenticated checks. KX-1006 is stored on dev and its support@ confirmation delivered, but Resend suppresses frank@ after a prior bounce. The approved main migration is still pending explicit confirmation required by automatic approval review.
+Sessions S1 to S8 are done and merged into `master` (PRs #1 to #8, including the handoff PR).
+S8 is merged in [PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/8), implementation commit `029963e`, master `8a70d88`. The protected preview passes authenticated checks. KX-1006 is stored on dev; Frank confirmed the support@ traveller confirmation, and Resend reports the frank@ operator retry delivered after its old bounce suppression was removed with explicit approval. The approved main migration and Sensitive production IP hash secret are verified. The merged production build is redeployed to load the secret. Acceptance documentation follows on `s8-acceptance`.
 
 | Session | What it delivered |
 | --- | --- |
@@ -30,12 +30,14 @@ S8 is implemented on `s8-enquiries`: [draft PR #8](https://github.com/ghost-sys-
 | S5 Tours | `/tours/[slug]` (6 prerendered pages) and `/tours` with URL filters (`features/tours/`), reusable content components |
 | S6 Pages | Destination hub and four parks, guides index and three guides, FAQ, about, demo booking terms/privacy, and an interim `/plan-your-trip` WhatsApp page |
 | S7 Home | Full ten-section homepage, trip finder, month bars, shared cards/permit table, demo review placeholder, FAQ and closing actions; year-aware future fee copy and listing badges |
-| S8 Enquiries (acceptance pending) | Full form and estimates, no-JS fallback, dev schema/storage, atomic rate limiting, escaped Resend emails and retention dry run; F20/F21 remain |
+| S8 Enquiries | Full form and estimates, no-JS fallback, dev/main schema, storage, atomic rate limiting, escaped Resend emails and retention dry run; real preview storage and both deliveries verified |
 
-**Pages that exist:** all 22 sitemap URLs, the 404 page, and `/styleguide` (development only). Home is complete; `/plan-your-trip` is a WhatsApp contact page until S8.
-**Pages still to complete:** enquiry form with storage/emails (S8). Its copy is already in `content/`.
+**Pages that exist:** all 22 sitemap URLs, the 404 page, and `/styleguide` (development only). Home and the full enquiry form/storage/emails are complete.
+**Pages still to complete:** none in the current content cap. S9 verification and S10 final launch checks remain.
 
 **Checks after S7:** typegen/typecheck, lint and production build clean, 206 Vitest tests, 120 Playwright tests (2 skips by design). All 22 sitemap URLs pass the crawl. Home passes axe and the 360px overflow check; hero image is the measured LCP element on both profiles and initial CLS is at most 0.01.
+
+**Checks after S8:** typegen/typecheck/lint/build pass; 253 unit tests, 2 real dev-database tests and 142 Playwright passes (2 expected skips). Protected preview passes all 22 sitemap URLs, form axe WCAG 2.2 AA and 360px overflow checks. KX-1006 reference and estimate match the screen, database and both email bodies. See `docs/research/enquiry-verification.md`.
 
 ---
 
@@ -104,8 +106,8 @@ npm run build
 | Session | Scope | Notes |
 | --- | --- | --- |
 | **S6: done** | Destinations, guides, FAQ, about and policies | `s6-pages`. All blocks, derived tours, allowed JSON-LD and demo variants implemented. See decisions 001/002/004 S6 notes and plan gaps G15–G17 |
-| **S7: done** | Full ten-section homepage | `s7-home`, pending review/merge. Trip finder, month bars, cards and demo content are verified. See decisions 001/002/004 S7 notes and G18 |
-| **S8: implemented, acceptance pending** | Enquiry flow, `/plan-your-trip` | `s8-enquiries`, draft PR #8. Full form, dev schema/migration, atomic rate limiting, estimates, both email variants and confirmations are implemented. Local tests pass (253 unit, 2 real DB, 142 browser; 2 expected skips). KX-1006 is stored in dev; support@ mail delivered, frank@ suppressed after a July bounce. F20/F21 block final acceptance/production readiness. See 003 S8 notes |
+| **S7: done** | Full ten-section homepage | `s7-home`, merged PR #7. Trip finder, month bars, cards and demo content are verified. See decisions 001/002/004 S7 notes and G18 |
+| **S8: done** | Enquiry flow, `/plan-your-trip` | `s8-enquiries`, merged PR #8. Local tests pass (253 unit, 2 real DB, 142 browser; 2 expected skips). KX-1006 is stored in dev; both emails delivered. Main schema and production secret are configured after explicit approval; F20/F21 resolved. See 003 S8 notes |
 | **S9** | Verification | Sitemap crawl test, axe on every template, Lighthouse, Schema validator, and a re-check of the yellow fever rule and UWA fees (12-fact-register.md) |
 | **S10** | Ship | Production env, production migration, deploy, smoke test, `docs/launch-notes.md` |
 
@@ -120,7 +122,7 @@ Cut order if time runs short: `docs/plan.md`, "What gets cut first".
   - `DATABASE_URL`, `DATABASE_URL_UNPOOLED`
   - `RESEND_API_KEY`, `EMAIL_FROM`, `ENQUIRY_NOTIFY_TO`, `EMAIL_REPLY_TO`
   - `NEXT_PUBLIC_GA_MEASUREMENT_ID`
-  - `IP_HASH_SECRET` added locally and as a branch-specific Sensitive S8 Preview value, without a trailing newline. Production setup awaits F21 confirmation
+  - `IP_HASH_SECRET` configured locally, as a branch-specific Sensitive S8 Preview value and as a Sensitive Production value, without trailing newlines. `.env.local` keeps local development on dev; `.env` is used only by the dedicated production migration runner
 - **Vercel:** project `veilcode-tourism`, live at `kanyonyi.veilcode.studio`. Preview uses Neon `dev`, Production uses `main`. Database values are marked Sensitive and can't be read back.
 - **Secrets:** never print or commit them, and never file them in MemPalace.
 
@@ -135,8 +137,8 @@ Cut order if time runs short: `docs/plan.md`, "What gets cut first".
 - F18: the GA ID is also set for Preview and in local `.env`, so test visits reach GA unless filtered.
 - G15–G17: closing copy reused from existing pages, interim enquiry-page copy, and the seasons guide's global fact stamp. No new wording was invented; review the choices in `docs/plan.md`.
 - G18: supply year-specific month notes and a weather-only green-season legend. For future years the homepage/listing use existing weather lines and the approved 2027 rates notice rather than unconfirmed 2026 discounts.
-- **S8 acceptance:** `/plan-your-trip` now has the form, dev storage and two sends. On KX-1006 the traveller mail delivered; operator mail was suppressed by Resend. Confirm the frank@ mailbox now works before clearing its old bounce suppression (F20).
-- **Production:** reviewed main migration was rejected by automatic approval review pending explicit confirmation (F21). Do not merge S8 before main migration and production IP hash-secret setup are complete.
+- G19–G21: approved operator From name fallback, future-year estimate copy/rates, and specific maximum-length/invalid-choice errors still need copy review. Existing approved lines are used.
+- **S8 acceptance/production setup:** F20/F21 are resolved after Frank's explicit approval. Both KX-1006 deliveries, main schema and production secret are verified. S9/S10 audits and the final production enquiry smoke test remain.
 - **Retention/monitoring:** schedule demo deletion before October 2027; `db:purge` defaults to dry run. App `sent` means accepted by Resend, not proven delivery; use Resend delivery logs as well as failed/pending rows until delivery webhooks/admin monitoring exist.
 
 ---
