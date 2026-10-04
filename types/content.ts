@@ -67,19 +67,26 @@ export type MediaLicence =
   | "CC BY-SA 4.0"
   | "Operator owned";
 
+/** One planned image. Until it is sourced, `photo` is absent and pages render the photo brief's
+ *  placeholder: a flat --muted block at the right aspect ratio with the alt text on it. */
 export interface MediaEntry {
   id: string;
-  /** Static import, so width, height and blurDataURL come from the file. */
-  src: StaticImageData;
+  /** Shot number in docs/copy/13-photo-brief.md. */
+  shot: number;
+  aspect: "16:9" | "3:2" | "4:5";
   alt: string;
   caption?: string;
-  photographer: string;
-  /** "Unsplash" or "Pexels", used in the "Photo: {photographer} / {source}" credit. */
-  sourceName: string;
-  sourceUrl: string;
-  licence: MediaLicence;
-  /** 1200 × 630 crop for Open Graph. Falls back to site.defaultOgImage. */
-  og?: StaticImageData;
+  photo?: {
+    /** Static import, so width, height and blurDataURL come from the file. */
+    src: StaticImageData;
+    photographer: string;
+    /** "Unsplash" or "Pexels", used in the "Photo: {photographer} / {source}" credit. */
+    sourceName: string;
+    sourceUrl: string;
+    licence: MediaLicence;
+    /** 1200 × 630 crop for Open Graph. */
+    og?: StaticImageData;
+  };
 }
 
 export type CtaTarget = LinkRef | "enquiry" | "whatsapp";
@@ -201,13 +208,31 @@ export type GuideBlock =
   | { type: "orderedList"; items: RichText[] }
   | { type: "table"; columns: string[]; rows: RichText[][]; caption?: RichText }
   | { type: "stamp"; text: RichText }
-  | { type: "monthEntry"; month: string; text: RichText };
+  | { type: "monthEntry"; month: string; text: RichText }
+  /** The gorilla permit table from content/facts.ts, so fees live in one file (001 section 2). */
+  | { type: "permitTable"; columns: "guide" | "home" };
 
 export interface GuideSection {
   /** Anchor used by jump links, e.g. "prices". */
   id: string;
   heading: string;
   blocks: GuideBlock[];
+}
+
+export interface GuidesIndex {
+  eyebrow: string;
+  h1: string;
+  intro: RichText;
+  close: { lead: string; whatsappLabel: string; faqLead: string; faqLabel: string };
+}
+
+export interface PermitRow {
+  visitor: string;
+  /** Longer label used in the permit guide. */
+  visitorLong?: string;
+  standard: string;
+  lowSeason2026: string;
+  from2027: string;
 }
 
 export interface Guide {
