@@ -12,11 +12,10 @@ Status as of Sunday 4 October 2026, second review. Resolved items are listed at 
 
 | # | What | Blocks | By |
 | --- | --- | --- | --- |
-| F16 | **Copy gaps G1, G2, G3, G7, G11 are still open** (next section). Not addressed in the 4 October update | Form (S8), hub (S6) | Wed |
-| F18 | **Confirm `.env` points at the Neon `dev` branch.** AGENTS.md now says local work uses `dev` via `.env.local`, but the project only has `.env`, and its endpoint name doesn't show which branch it is. Either rename it to `.env.local` with the dev connection strings, or confirm it's already dev | S8 migrations | Wed |
-| F19 | **AGENTS.md section 38 lost the MemPalace setup block** added on 4 October (the file was replaced). Re-add it, or say if it was removed on purpose | Every session | Mon |
+| F16 | **Copy gap G7 is the only one left:** the destinations hub "Map caption" with no map. Default: show the caption above the drive-time table | Hub (S6) | Wed |
+| F18 | **GA on Preview and local `.env`.** Still set there as of 4 Oct, so test visits reach GA unless the internal-traffic filter is on. Frank's call; no build impact | None | Any time |
 
-**Resolved on 4 October:** WhatsApp number (F1) · reference HTML path (F2) · Vercel and domain live (F3) · basic Consent Mode confirmed (F5) · photo sourcing, Unsplash/Pexels per 13-photo-brief.md (F7) · price model for 1 to 12 travellers (F8) · demo policy text (F9) · status colours (F11) · logo and favicon (F12) · DESIGN.md typo (F14) · AGENTS.md email address restored to frank@veilcode.studio (F17) · `/guides` index added to 06-guides.md (F15, C5) · Neon branches decided in AGENTS.md default 6 (F6) · `mail.veilcode.studio` verified in Resend (F4) · `DATABASE_URL_UNPOOLED` added (F13).
+**Resolved on 4 October:** WhatsApp number (F1) · reference HTML path (F2) · Vercel and domain live (F3) · basic Consent Mode confirmed (F5) · photo sourcing, Unsplash/Pexels per 13-photo-brief.md (F7) · price model for 1 to 12 travellers (F8) · demo policy text (F9) · status colours (F11) · logo and favicon (F12) · DESIGN.md typo (F14) · AGENTS.md email address restored to frank@veilcode.studio (F17) · `/guides` index added to 06-guides.md (F15, C5) · Neon branches decided in AGENTS.md default 6 (F6) · `mail.veilcode.studio` verified in Resend (F4) · `DATABASE_URL_UNPOOLED` added (F13) · form placeholders, stepper labels, field errors, error summary and custom estimate added to 08-plan-your-trip.md (G1, G2, G3, G11) · MemPalace block restored in AGENTS.md section 38 (F19) · Neon `dev` branch created, `.env.local` points at it and both strings connect, Postgres 18 (4 Oct) · Resend vars added to Vercel Preview; Preview/Production DB strings confirmed by Frank (F18).
 
 **Heads-up:** `kanyonyi.veilcode.studio` currently serves the default "Create Next App" page with no `noindex`. S2's first deploy replaces it. If you want it out of search before Monday, set the domain to a Vercel password or redirect for now.
 
@@ -26,12 +25,8 @@ Per the brief, I'll use the nearest existing line and list each one here. Nothin
 
 | # | Where | Need | Nearest existing line used until approved |
 | --- | --- | --- | --- |
-| G1 | Form errors on selects, radios and consent | "Please add your {field name}." reads badly for "Which trip?" | `which trip` / `travel month` / `country of residence` / `agreement to the privacy notice` inserted into the template |
-| G2 | Select placeholder items (Base UI needs an item with `value: null` and a label) | e.g. "Choose a trip", "Choose a month" | Trip finder: its own "Any …" options are the default, so it isn't affected. Enquiry form: placeholder label = the field label |
-| G3 | Traveller stepper buttons (screen reader labels) | "Add a traveller" / "Remove a traveller" | None exists |
 | G7 | Destinations hub "Map caption" | The copy implies a map, but there is no map asset | Caption shown above the drive-time table, no map |
 | G9 | Destination closing body for Kibale, Queen Elizabeth, Murchison | Heading and button only in the copy | Rendered without a body (fine if intended) |
-| G11 | Demo traveller email for "Something custom" | `{estimate}` row value | "We'll price your custom trip in your quote." |
 | G12 | Operator notification in demo mode | The copy has one version only | Same email in both modes (it only goes to frank@) |
 
 ## Conflicts found, with proposed resolutions
@@ -56,14 +51,14 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 
 ### Monday 5 October
 
-**S1. Foundation (Phase 02)**
+**S1. Foundation (Phase 02)**: done 4 October 2026, branch `s1-foundation`
 - Install dependencies (003 section 11). Add `vitest.config.ts`, `playwright.config.ts`, `npm run` scripts and `.env.example`
 - Tokens and fonts into `globals.css` and `app/fonts.ts` (004 sections 1 and 2). Contrast check for the status colours
 - shadcn: adjust `button`, `badge`, `input`, `textarea`, `select` and `card`; add the 16 components from 004 section 4
 - `types/content.ts`, `content/site.ts`, `content/ui.ts`, `content/meta.ts`, `lib/content/inline.tsx` and its tests
 - *Done when:* a styles page in dev shows every button, input and type size on the brand tokens
 
-**S2. Shell and SEO infrastructure (Phase 02)**
+**S2. Shell and SEO infrastructure (Phase 02)**: done 4 October 2026, same branch. Interim homepage shows the approved hero only until S7
 - Root layout: `metadataBase`, title template, robots meta, skip link, demo notice, header (desktop nav, currency toggle, CTA), mobile menu sheet, footer, `not-found.tsx`, `error.tsx`, `global-error.tsx`
 - `robots.ts`, `sitemap.ts` (from a content index stub), `llms.txt/route.ts`, `X-Robots-Tag` and security headers in `next.config.ts`, `json-ld.tsx` with Organization and WebSite, breadcrumb component
 - Analytics: consent script, consent banner, `track()`, cookie settings link

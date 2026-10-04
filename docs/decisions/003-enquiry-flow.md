@@ -53,22 +53,22 @@ export const TOUR_CUSTOM = "custom" as const;
 export const MONTH_NOT_SURE = "not-sure" as const;
 
 export const enquirySchema = z.object({
-  tour: z.enum([...tourSlugs, TOUR_CUSTOM], { error: req("which trip") }),
+  tour: z.enum([...tourSlugs, TOUR_CUSTOM], { error: E.tour }),
   travelMonth: z.union([
     z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),   // checked against the rolling 18-month window server side
     z.literal(MONTH_NOT_SURE),
-  ], { error: req("travel month") }),
+  ], { error: E.travelMonth }),
   flexibility: z.enum(["fixed", "week-or-two", "any-time-that-month"]).optional(),
-  travellers: z.coerce.number().int().min(1).max(12),
+  travellers: z.coerce.number().int().min(1, E.travellers).max(12, E.travellers),
   anyoneUnder15: z.enum(["no", "yes"]).optional(),
-  residency: z.enum(["outside-east-africa", "east-africa"], { error: req("country of residence") }),
-  name: z.string().trim().min(1, req("name")).max(120),
-  email: z.email({ error: "Enter an email address like name@example.com." }).max(254),
+  residency: z.enum(["outside-east-africa", "east-africa"], { error: E.residency }),
+  name: z.string().trim().min(1, E.name).max(120),
+  email: z.email({ error: E.email }).max(254),
   whatsapp: z.string().trim().max(32)
-    .regex(/^\+?[0-9 ()-]{7,}$/, { error: "Include your country code, for example +44 or +256." })
+    .regex(/^\+?[0-9 ()-]{7,}$/, { error: E.whatsapp })
     .optional().or(z.literal("")),
   notes: z.string().trim().max(2000).optional(),
-  consent: z.literal("on", { error: req("agreement to the privacy notice") }),
+  consent: z.literal("on", { error: E.consent }),
 
   // Not shown to the user
   website: z.string().max(0).optional(),           // honeypot; see section 5
@@ -77,10 +77,10 @@ export const enquirySchema = z.object({
   utmMedium: z.string().max(100).optional(),
   utmCampaign: z.string().max(100).optional(),
 });
-// req(field) => `Please add your ${field}.` (02-global.md generic required error)
+// E = field errors from 08-plan-your-trip.md, held in content/pages/plan-your-trip.ts
 ```
 
-**Copy gap:** the generic error template "Please add your {field name}." reads badly for selects and the consent box ("Please add your which trip"). I've used the nearest wording above (`which trip`, `travel month`, `country of residence`, `agreement to the privacy notice`). These are gaps for Frank to approve; see docs/plan.md.
+Field errors, select placeholders ("Choose a trip", "Choose a month", "Choose where you live"), stepper labels and the error summary ("Please fix {n} thing(s) below before sending.", focused and linking to each field) all come from 08-plan-your-trip.md. The summary renders "thing" or "things" to match {n}; the literal "(s)" isn't shown.
 
 The same schema validates on the client (on blur and on submit, for instant messages) and on the server (authoritative). Zod's issues are mapped to `{ fieldErrors: Record<field, string> }`. The form renders them with `aria-invalid`, `aria-describedby` and text, never colour alone, and moves focus to the first invalid field.
 
@@ -136,7 +136,7 @@ Notes on the design:
 - **The raw IP is never stored.** A keyed hash is enough for rate limiting and can't be reversed without the secret.
 - **Retention:** the demo privacy notice promises **12 months, then deleted** (the live notice says 24 months for enquiries that don't become bookings). Phase 05 adds `npm run db:purge` (`DELETE FROM enquiries WHERE created_at < now() - interval '12 months'`) and the plan records that it must be scheduled before the first rows reach 12 months (October 2027), for example with a Vercel cron. Deletion requests in the meantime are handled by hand in Neon.
 
-**Migrations:** `drizzle-kit generate` writes SQL to `db/migrations/`. Those files are committed and reviewed. `drizzle-kit migrate` is run manually against Neon (`npm run db:migrate`), not inside `next build`, so a failed build never leaves a half-migrated database. Per AGENTS.md section 0 (default 6): local `.env.local` and Vercel previews use the `dev` branch; only Vercel production uses `main`. Migrations run on `dev` first, then on `main` once verified. Local development never points at `main`.
+**Migrations:** `drizzle-kit generate` writes SQL to `db/migrations/`. Those files are committed and reviewed. `drizzle-kit migrate` is run manually against Neon (`npm run db:migrate`), not inside `next build`, so a failed build never leaves a half-migrated database. Per AGENTS.md section 0 (default 6): local `.env.local` and Vercel previews use the `dev` branch; only Vercel production uses `main`. Migrations run on `dev` first, then on `main` once verified. `drizzle.config.ts` loads env with Next's `@next/env` `loadEnvConfig`, so `npm run db:migrate` uses `.env.local` (`dev`) by default. Migrating `main` needs an explicit `npm run db:migrate:prod` that reads `.env` only and asks for confirmation. Local development never points at `main`.
 
 ### 4. Submit sequence
 
@@ -178,7 +178,7 @@ Notes on the design:
 - `EMAIL_FROM` is parsed for the address only, because the display name changes with demo mode. The address's domain must be verified in Resend. **On 4 October 2026 only `veilcode.studio` was verified, while `EMAIL_FROM` uses `mail.veilcode.studio`.** Resend verifies each subdomain separately, so `mail.veilcode.studio` must be added and verified (the brief requires a subdomain to protect the root domain's reputation). `config/env.ts` rejects any From address containing `kanyonyi`.
 - The HTML is built by `features/enquiries/services/enquiry-emails.ts` as table-based markup with inline styles, using the brand tokens as literal hex values (email clients don't support CSS variables). A plain-text part is always included.
 - **"Reply by: {date + 1 working day}"** in the operator email is computed in `Africa/Kampala` time. Working days are Monday to Saturday, matching the hours in the copy. Sunday rolls to Monday.
-- `{estimate}` in the traveller email: `USD 3,300` for tours. **Copy gap:** the copy gives no wording for "Something custom". I'll use the form's existing line "We'll price your custom trip in your quote." and list it as a gap.
+- `{estimate}` in the traveller email: `USD 3,300` for tours, and "Priced in your quote" for "Something custom" (the estimate box value in 08-plan-your-trip.md).
 - The guide links in the traveller email are absolute URLs built from `NEXT_PUBLIC_SITE_URL`.
 - No address or mailbox containing `kanyonyi` is used anywhere. Env values are validated at startup to make sure of it.
 
@@ -186,7 +186,7 @@ Notes on the design:
 
 `estimateTotal(tour, travellers)` = `pricePerPerson(tour, travellers)` × travellers, plus the single room supplement when travellers = 1. It uses the 04-tours.md price model (001), at standard season only, as the small print says. Example: tour 1 for 3 travellers is $1,500 × 3 = $4,500.
 
-Extra lines from 08-plan-your-trip.md: "Includes the single room supplement." when travellers = 1, and "Groups of seven or more travel in two vehicles, each with its own guide." when travellers ≥ 7. "Something custom" shows no figure, just the custom line.
+Extra lines from 08-plan-your-trip.md: "Includes the single room supplement." when travellers = 1, and "Groups of seven or more travel in two vehicles, each with its own guide." when travellers ≥ 7. "Something custom" shows the value "Priced in your quote" with the custom small print. At 12 travellers the stepper shows "For groups larger than 12, tell us in the notes and we'll plan it."
 
 It is labelled "Estimated total", with the copy's small print, and the quote confirms the exact price. It is shown as `$3,300` (compact UI format per 01-voice.md) and follows the currency toggle.
 
@@ -228,8 +228,8 @@ Names follow `env.example` (added 4 October 2026).
 
 | Var | Scope | Purpose | Status |
 | --- | --- | --- | --- |
-| `DATABASE_URL` | server | Neon pooled string, used by the app | Set |
-| `DATABASE_URL_UNPOOLED` | migrations only | Direct connection for `drizzle-kit migrate` | **Missing from `.env`** |
+| `DATABASE_URL` | server | Neon pooled string, used by the app | Set: `.env` = `main`, `.env.local` = `dev` (local uses `dev`, since `.env.local` wins) |
+| `DATABASE_URL_UNPOOLED` | migrations only | Direct connection for `drizzle-kit migrate` | Set in both files (`main` / `dev`) |
 | `NEXT_PUBLIC_SITE_URL` | public | Canonicals, emails, llms.txt | Set |
 | `NEXT_PUBLIC_DEMO_MODE` | public | Demo bar, noindex, demo copy variants (002 section 2) | Set |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | public | Digits only, for wa.me links | Set |
@@ -238,7 +238,7 @@ Names follow `env.example` (added 4 October 2026).
 | `EMAIL_REPLY_TO` | server | frank@veilcode.studio | Set |
 | `ENQUIRY_NOTIFY_TO` | server | frank@veilcode.studio | Set |
 | `IP_HASH_SECRET` | server | HMAC key, 32+ random bytes | **Not in `env.example` yet.** Added in S8 |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | public | GA4 | Set |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | public | GA4 (`G-XXXXXXXXXX`). Set in Vercel **Production only**; leave it empty locally and in Preview so test traffic never reaches GA. The analytics component renders nothing when it's empty | Set (`G-VTGBCCGM1N`), 4 Oct |
 
 `.env` is git-ignored (`.env*`). `env.example` has no leading dot, so it isn't caught by that pattern and can be committed. `config/env.ts` validates the server variables with Zod once, on first import, and fails loudly.
 
@@ -250,7 +250,7 @@ Names follow `env.example` (added 4 October 2026).
 | `drizzle-orm` | dep | Typed queries, schema as code (section 2 asks for a typed access layer and migrations) | Raw SQL with the Neon driver would work for one table, but loses typed rows and migration generation | Server only, so no bundle cost. Actively maintained |
 | `@neondatabase/serverless` | dep | Neon's official driver for serverless (HTTP or WebSocket) | `pg` needs connection pooling on Vercel functions | Server only |
 | `drizzle-kit` | devDep | Generates and applies SQL migrations | Hand-written SQL plus a runner script | Dev only |
-| `vitest`, `@vitejs/plugin-react`, `jsdom`, `@testing-library/react`, `@testing-library/dom` | devDep | Unit and component tests (brief default 5) | None | Dev only |
+| `vitest`, `jsdom`, `@testing-library/react`, `@testing-library/dom` | devDep | Unit and component tests (brief default 5) | None | Dev only |
 | `@playwright/test`, `@axe-core/playwright` | devDep | E2E and accessibility checks (brief default 5) | None | Dev only. Browsers are downloaded separately |
 | `schema-dts` | devDep | Types for JSON-LD builders | Hand-typed objects | Types only, zero runtime. **Cut first** if anyone objects |
 
@@ -261,6 +261,8 @@ Names follow `env.example` (added 4 October 2026).
 - **`react-hook-form`:** `useActionState` plus Zod covers validation, pending and error states. The installed shadcn style (base-nova) uses the `Field` components, which don't need it.
 - **`@next/third-parties`:** GA plus Consent Mode v2 needs a consent default set *before* gtag loads. Two `next/script` tags do that directly (see 004).
 - **Upstash / Redis:** the rate limit runs on Postgres (section 5).
+
+**Installed 4 October 2026 (S1).** `@vitejs/plugin-react` was dropped: its latest version has a Babel 8 peer conflict, and Vitest's built-in transform handles JSX with `oxc.jsx.runtime: "automatic"`. `npm audit --omit=dev` reports 7 high-severity findings, all inside the shadcn CLI's own tooling (`ts-morph`, `fast-glob`), none of which reach the browser bundle. Revisit when shadcn updates.
 
 ## Consequences
 
