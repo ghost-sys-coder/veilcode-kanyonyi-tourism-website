@@ -14,6 +14,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 The rules below describe how to build. This section describes what is being built right now. Where this section and a later rule conflict, this section wins.
 
+**Current state and handoff:** read `docs/handoff.md` before starting work. It lists what is built, the conventions the tests enforce, known gotchas and what is left, and `docs/plan.md` holds the session plan and open items.
+
 **What this build is:** A showcase website for VeilCode Studio, shown to prospective tour operator clients to sell website builds. It is also the starter for those client builds: keep all operator specific content and branding in `content/` and design tokens, so a client site is a content and brand swap, not a rebuild.
 
 **Operator:** Kanyonyi Expeditions, a fictional private safari operator based in Kololo, Kampala, Uganda. Sells small group and private trips: gorilla and chimp trekking, savannah safaris, Nile adventures. Most travelers are from the UK, US, Europe and Australia; some are Uganda residents.
