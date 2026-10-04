@@ -143,14 +143,21 @@ AGENTS.md section 9 (updated 4 October 2026) allows editing Tailwind classes and
 
 | File | Change |
 | --- | --- |
-| `button.tsx` | All variants `rounded-full`. Add `variant: "sun"` (`bg-sun text-sun-foreground hover:bg-sun/90`). `default` stays forest. Add `size: "cta"` (`h-12 px-6 text-base`, a 48px touch target) and change `default` to `h-11 px-5` (44px). Focus ring uses `ring-ring`, never sun |
-| `badge.tsx` | `rounded-full`, plus `variant: "tag"` (mist fill, forest text) for trip card tags |
-| `input.tsx`, `textarea.tsx`, `select.tsx` (trigger) | `rounded-sm` (14px) and `h-11` minimum. Base text 16px, so iOS doesn't zoom on focus |
-| `card.tsx` | `rounded-lg` (20px). Remove the default shadow (DESIGN.md: flat). A `data-interactive` hover lift is applied by `trip-card.tsx`, not in `card.tsx` |
+| `button.tsx` | Base: `rounded-full`, `text-base font-semibold`. New `variant: "sun"` (`bg-sun text-sun-foreground hover:bg-sun/90`); `default` stays forest (`hover:bg-primary/90`). Sizes: `default` `h-11 px-5` (44px), `sm` `h-9 px-4 text-sm`, `lg` and new `cta` `h-12 px-6` (48px), `icon` `size-11`, `icon-sm` `size-9`, `icon-lg` `size-12`. Per-size `rounded-[min(...)]` overrides removed so every size is a pill |
+| `badge.tsx` | `rounded-full`, `h-6`. New variants `tag` (mist fill, forest text), `success` and `warning` (status surface with status text) |
+| `input.tsx`, `textarea.tsx` | `rounded-sm` (14px), `bg-card`, `h-11` (textarea `min-h-28`), `px-3.5`. Removed `md:text-sm` so text stays 16px at every width |
+| `select.tsx` (trigger only) | `rounded-sm`, `bg-card`, `text-base`, `h-11` (`sm` `h-9`) |
+| `card.tsx` | `rounded-lg` (20px), `border border-border` instead of `ring-1 ring-foreground/10`, `text-base`, footer without the muted fill. Hover lift belongs to `trip-card.tsx` |
+| `toggle.tsx`, `toggle-group.tsx` | `rounded-full` pills; toggle `default` `h-10 px-4`, `sm` `h-9 px-3`, `lg` `h-11 px-5` |
+| **All of `components/ui/`** | `ring-ring/50` replaced with `ring-ring` (13 files). Forest at 50% opacity is about 2.9:1 on the page ground, below the 3:1 WCAG 2.2 requires for focus indicators; full forest is 11.2:1 |
+
+Each edited file starts with a two-line "Brand-adjusted" comment.
+
+**Token deviation from DESIGN.md (needs Frank's approval):** `--input` is `#7F8D86`, not `#D5DDD6`. Form control edges must reach 3:1 against what's around them (WCAG 2.2, 1.4.11); `#D5DDD6` is 1.39:1 on a white field. `#7F8D86` is the lightest grey-green that passes on both white (3.47:1) and the page ground (3.13:1). `--border` stays `#D5DDD6` because card and divider borders are decorative. Every other pairing was checked on 4 October 2026: all text pairs pass 4.5:1 and the focus ring is 11.2:1.
 
 ### 4. shadcn components to add
 
-Added with `npx shadcn@latest add <name>` in Phase 02 (or when first needed). All are base-nova or Base UI versions.
+Added with the shadcn CLI on 4 October 2026 (S1). All are base-nova (Base UI) versions; `toggle` came in with `toggle-group`. None added an npm dependency.
 
 | Component | Used for |
 | --- | --- |
@@ -160,7 +167,7 @@ Added with `npx shadcn@latest add <name>` in Phase 02 (or when first needed). Al
 | `checkbox` | Consent box |
 | `field` | Label, description and error wiring for every form field (replaces the older `form` and react-hook-form approach in base-nova) |
 | `label` | Used by `field` |
-| `navigation-menu` | Desktop header nav (5 flat links; used for keyboard semantics. Revisit if it adds weight with no dropdowns, in which case use a plain `<nav><ul>`) |
+| `navigation-menu` | Installed but **not used**: with five flat links and no dropdowns, the header uses a plain `<nav><ul>` (`desktop-nav.tsx`, S2). Remove if still unused at launch |
 | `popover` | Floating WhatsApp popover |
 | `radio-group` | Flexibility and under-15 questions |
 | `separator` | Footer and itinerary dividers |
@@ -169,9 +176,8 @@ Added with `npx shadcn@latest add <name>` in Phase 02 (or when first needed). Al
 | `table` | At a glance, prices, permit table, guide tables |
 | `toggle-group` | Month picker (DESIGN.md section 10.3), USD/UGX toggle, tour filter chips |
 | `tooltip` | Currency rate explanation |
-| `sonner` | "Copied" feedback for the WhatsApp number copy |
 
-Not added: `dialog` (itineraries are pages, per DESIGN.md section 11), `carousel` (no hero sliders; galleries are grids), `calendar` (months, not dates), `command`, `pagination` (six tours, so no pagination is needed).
+Not added: `sonner` (its shadcn wrapper depends on `next-themes`, a theme switcher this light-only site doesn't need; "Copied" is shown inline in the WhatsApp popover, as 02-global.md describes), `dialog` (itineraries are pages, per DESIGN.md section 11), `carousel` (no hero sliders; galleries are grids), `calendar` (months, not dates), `command`, `pagination` (six tours, so no pagination is needed).
 
 ### 5. Custom components and why shadcn doesn't cover them
 
@@ -266,6 +272,15 @@ AGENTS.md section 0 lists the Base UI differences. These are the places they app
 - Sheet, Popover and Tooltip triggers: `render={<Button … />}`, never `asChild`
 - Trip finder and form selects: `items` on the `Select` root, with the empty option as an item whose `value` is `null`
 - Month picker, currency toggle and filter chips (`ToggleGroup`) and FAQ (`Accordion`): the `multiple` boolean, and `defaultValue` is always an array
+
+### 11. Shell decisions made in S2 (4 October 2026)
+
+- **Links styled as buttons** use `cn(buttonVariants(...), extra)` on a real `<Link>` or `<a>`. `<Button render={<Link />} nativeButton={false}>` makes Base UI add `role="button"`, so screen readers announce navigation as a button; Playwright caught it. Always merge with `cn`: `buttonVariants({ className })` only concatenates, so a base `inline-flex` beats a `hidden` override.
+- **Floating WhatsApp button is forest, not the reference's sun.** A sun button beside "Find trips" would break DESIGN.md's one-sun-per-viewport rule.
+- **Currency toggle moves into the mobile menu below 640px.** At 320 to 380px the header can't fit the logo, the toggle and the menu button.
+- **Demo notice and currency choice are applied before paint** by an inline boot script (`lib/ui/boot-script.ts`) setting `html[data-demo-dismissed]` and `html[data-currency]`, so neither flashes on load.
+- **Consent is basic mode:** gtag.js is only requested after "Accept analytics". Withdrawing consent reloads the page, because gtag can't be unloaded. A Playwright test confirms no request reaches googletagmanager.com after "Reject".
+- **External state uses `useSyncExternalStore`** (`hooks/use-consent.ts`, `hooks/use-currency.ts`), not effects that set state; the React lint rules reject the latter.
 
 ## Consequences
 

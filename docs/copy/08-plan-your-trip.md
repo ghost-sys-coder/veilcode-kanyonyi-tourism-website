@@ -45,6 +45,40 @@ Only what we need to quote. Fields in this order:
 - Solo traveller line: "Includes the single room supplement."
 - Seven or more travellers line: "Groups of seven or more travel in two vehicles, each with its own guide."
 
+**Estimate box when "Something custom" is selected:** Label: Estimated total · Value: Priced in your quote · Small text: "We'll price your custom trip in your quote."
+
+**Select placeholders** (shown before a choice is made)
+
+| Field | Placeholder |
+| --- | --- |
+| tour | Choose a trip |
+| travelMonth | Choose a month |
+| residency | Choose where you live |
+
+**Travellers stepper**
+
+| Element | Text |
+| --- | --- |
+| Decrease button (screen readers) | Remove a traveller |
+| Increase button (screen readers) | Add a traveller |
+| Value read-out | {n} traveller / {n} travellers |
+| At the limit (helper text) | For groups larger than 12, tell us in the notes and we'll plan it. |
+
+**Field errors** (shown under the field, with an error icon)
+
+| Field | Error |
+| --- | --- |
+| tour | Choose a trip, or "Something custom". |
+| travelMonth | Choose a month, or "Not sure yet". |
+| residency | Choose where you live, so we can check permit rates. |
+| travellers | Choose between 1 and 12 travellers. |
+| name | Please add your name. |
+| email | Enter an email address like name@example.com. |
+| whatsapp (if filled but invalid) | Enter a number with its country code, for example +256 750 242627. |
+| consent | Please tick the box so we can reply to you. |
+
+**Error summary** (top of the form after a failed submit, focused for screen readers): "Please fix {n} thing(s) below before sending." with each error linked to its field.
+
 **Submit button:** Send enquiry · while sending: Sending…
 
 **Below button:** We reply within one working day. Your details are used only to plan your trip; see our privacy notice.

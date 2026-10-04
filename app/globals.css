@@ -2,27 +2,13 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Kept so a .dark block can be added later without touching components (DESIGN.md section 2). */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* shadcn standard mappings */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -39,92 +25,172 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+
+  /* Fonts: next/font variables are set on <html> in app/layout.tsx */
+  --font-sans: var(--font-body), system-ui, sans-serif;
+  --font-heading: var(--font-display), Georgia, serif;
+  --font-mono: var(--font-label), ui-monospace, monospace;
+
+  /* Brand colours (DESIGN.md section 2) */
+  --color-sun: var(--sun);
+  --color-sun-foreground: var(--sun-foreground);
+  --color-clay: var(--clay);
+  --color-band: var(--band);
+  --color-band-foreground: var(--band-foreground);
+  --color-band-accent: var(--band-accent);
+
+  /* Status colours (DESIGN.md section 2, rule 4) */
+  --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
+  --color-warning: var(--warning);
+  --color-warning-surface: var(--warning-surface);
+  --color-destructive-surface: var(--destructive-surface);
+
+  /* Radius (DESIGN.md section 5): 14px inputs, 20px cards and dialogs; pills use rounded-full */
+  --radius-sm: 0.875rem;
+  --radius-md: 1rem;
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Type scale (DESIGN.md section 3), fluid between 360px and 1180px viewports */
+  --text-display-xl: clamp(2.75rem, 1.53rem + 5.37vw, 6rem);
+  --text-display-xl--line-height: 1.02;
+  --text-display-l: clamp(1.875rem, 1.38rem + 2.2vw, 3rem);
+  --text-display-l--line-height: 1.08;
+  --text-display-m: clamp(1.5rem, 1.39rem + 0.49vw, 1.75rem);
+  --text-display-m--line-height: 1.15;
+  --text-body-l: clamp(1.0625rem, 1.03rem + 0.12vw, 1.125rem);
+  --text-body-l--line-height: 1.6;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-body-s: 0.875rem;
+  --text-body-s--line-height: 1.5;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.4;
+
+  /* Layout (DESIGN.md section 4) */
+  --container-page: 1180px;
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  /* DESIGN.md section 2, verbatim */
+  --radius: 1.25rem;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #F2F4EF;
+  --foreground: #10221D;
+  --card: #FFFFFF;
+  --card-foreground: #10221D;
+  --popover: #FFFFFF;
+  --popover-foreground: #10221D;
+
+  --primary: #0F3B33;
+  --primary-foreground: #F2F4EF;
+  --secondary: #E4EAE2;
+  --secondary-foreground: #10221D;
+  --muted: #E4EAE2;
+  --muted-foreground: #56665F;
+  --accent: #E4EAE2;
+  --accent-foreground: #0F3B33;
+  --destructive: #B42318;
+
+  --border: #D5DDD6;
+  /* Deviation from DESIGN.md (#D5DDD6, 1.39:1): form control edges need 3:1 (WCAG 2.2, 1.4.11).
+     3.47:1 on white fields, 3.13:1 on the page ground. Decorative --border is unchanged. See 004. */
+  --input: #7F8D86;
+  --ring: #0F3B33; /* never sun: 1.9:1 on the page ground fails focus contrast */
+
+  --sun: #E3A72F;
+  --sun-foreground: #3E2A03;
+  --clay: #A0482E;
+  --band: #0F3B33;
+  --band-foreground: #F2F4EF;
+  --band-accent: #E3A72F;
+
+  --success: #1E6B45;
+  --success-surface: #DDF1E5;
+  --warning: #7A4E00;
+  --warning-surface: #FBEFD2;
+  --destructive-surface: #FDE8E6;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
+    @apply border-border outline-ring;
   }
   html {
     @apply font-sans;
   }
+  body {
+    @apply bg-background text-body text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-heading font-normal;
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Container: max 1180px, never less than a 16px gutter */
+@utility container-page {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: max(1rem, 4vw);
+}
+
+/* Section rhythm: 56px mobile, 72px desktop */
+@utility section-y {
+  padding-block: 3.5rem;
+  @media (width >= 48rem) {
+    padding-block: 4.5rem;
+  }
+}
+
+/* Mono uppercase label in clay ("3 DAYS · BWINDI IMPENETRABLE") */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--clay);
+}
+
+@utility measure {
+  max-width: 68ch;
+}
+
+@utility measure-lede {
+  max-width: 58ch;
+}
+
+@utility price {
+  font-family: var(--font-heading);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Currency toggle (004 section 7): every price is rendered in both currencies, CSS shows one */
+html:not([data-currency="ugx"]) [data-ccy="ugx"],
+html[data-currency="ugx"] [data-ccy="usd"] {
+  display: none;
+}
+
+/* Demo notice dismissed for this session (set before paint by lib/ui/boot-script.ts) */
+html[data-demo-dismissed] .demo-notice {
+  display: none;
 }
