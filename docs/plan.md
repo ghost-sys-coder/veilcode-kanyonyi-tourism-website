@@ -13,6 +13,8 @@ Status as of Sunday 4 October 2026, second review. Resolved items are listed at 
 | # | What | Blocks | By |
 | --- | --- | --- | --- |
 | F16 | Destinations hub "Map caption" with no map (G7). Caption is shown above the drive-time table; later copy gaps are listed below | None; fallback shipped | Wed |
+| F20 | Resend suppresses frank@veilcode.studio after a 27 July bounce. Confirm that mailbox works, then clear its old suppression and retry KX-1006 | S8 operator delivery acceptance | Before merge |
+| F21 | Explicit confirmation for the reviewed additive Neon main migration and production IP hash secret. Automatic approval review rejected the production mutation pending confirmation | Production readiness | Before merge / S10 |
 | F18 | **GA on Preview and local `.env`.** Still set there as of 4 Oct, so test visits reach GA unless the internal-traffic filter is on. Frank's call; no build impact | None | Any time |
 
 **Resolved on 4 October:** WhatsApp number (F1) · reference HTML path (F2) · Vercel and domain live (F3) · basic Consent Mode confirmed (F5) · photo sourcing, Unsplash/Pexels per 13-photo-brief.md (F7) · price model for 1 to 12 travellers (F8) · demo policy text (F9) · status colours (F11) · logo and favicon (F12) · DESIGN.md typo (F14) · AGENTS.md email address restored to frank@veilcode.studio (F17) · `/guides` index added to 06-guides.md (F15, C5) · Neon branches decided in AGENTS.md default 6 (F6) · `mail.veilcode.studio` verified in Resend (F4) · `DATABASE_URL_UNPOOLED` added (F13) · form placeholders, stepper labels, field errors, error summary and custom estimate added to 08-plan-your-trip.md (G1, G2, G3, G11) · MemPalace block restored in AGENTS.md section 38 (F19) · Neon `dev` branch created, `.env.local` points at it and both strings connect, Postgres 18 (4 Oct) · Resend vars added to Vercel Preview; Preview/Production DB strings confirmed by Frank (F18).
@@ -120,7 +122,7 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 - The header is opaque for contrast over the dark band. Display XL retains 44–96px but grows more gradually for the full approved H1; both changes are recorded in 004. Playwright output/report folders are ignored by ESLint to avoid a generated-directory scan race
 - MemPalace MCP tools remain unavailable; documentation carries the session record. S8 is next and must replace the interim enquiry contact page
 
-**S8. Enquiries (Phase 05)**: implementation complete 4 October 2026, branch `s8-enquiries`; real preview acceptance pending
+**S8. Enquiries (Phase 05)**: implementation complete 4 October 2026, branch `s8-enquiries`; operator delivery acceptance pending
 - Replace S6's interim `/plan-your-trip` WhatsApp contact page with the form and full side panel. The interim `interimBody` content can then be removed
 - Drizzle schema, first migration, `npm run db:migrate` against the Neon dev branch, then production
 - Zod schema, `submit-enquiry` action, repository, rate limit, honeypot, `services/email/resend.ts`, the email builders (demo and live traveller versions, operator notification), the 04-tours.md price model estimate, `db:purge` script
@@ -130,7 +132,10 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 - Implemented: full form, demo/live side panel and confirmations, authoritative Zod validation, standard-price/currency estimate, atomic three-per-ten-minute rate limit, honeypot, sequence references, escaped HTML/plain text and two independent Resend sends. No dependency added
 - Verified locally: typegen/typecheck/lint and production build; 253 unit tests, 2 real dev-database integration tests and 142 Playwright tests pass (2 expected skips). The final token/stamp adjustment passes all 22 enquiry tests on mobile and desktop. No-JavaScript submission, network/storage/rate/mail failures, bot handling, PII-free analytics, axe and 360px wrapping are covered
 - Dev migration applied; fixture rows removed; retention dry run reports zero eligible rows. Schedule production retention before October 2027 and monitor failed/pending email-status rows manually
-- MemPalace MCP tools remain unavailable; decision 003 and handoff carry the session record. Real preview verification uses support@veilcode.studio (traveller) and frank@veilcode.studio (operator), as authorised by Frank
+- Real preview: [draft PR #8](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/8), commit `029963e`, [protected preview](https://veilcode-tourism-git-s8-enquiries-ghostsyscoders-projects.vercel.app). KX-1006 is saved on Neon dev with the correct USD 3,300 estimate; its reference matches the screen and both email bodies/subjects. support@ confirmation delivered. frank@ notification suppressed by Resend after a July bounce (F20); known failure recorded on the dev test row. S8 is not marked done until both arrive
+- Preview additionally passes the real 22-route sitemap crawl, form axe WCAG 2.2 AA and 360px overflow check. The first submission failed configuration before storage/mail because stdin supplied a trailing newline in the hash secret; the newline-free secret and redeploy resolved it
+- Main migration has not run: automatic approval review requires explicit production confirmation (F21). The reviewed script/SQL are ready; production hash-secret setup remains pending. Local development continues to use dev
+- MemPalace MCP tools remain unavailable; decision 003 and handoff carry the session record. No diary results were invented
 
 ### Friday 9 October (ship day)
 
