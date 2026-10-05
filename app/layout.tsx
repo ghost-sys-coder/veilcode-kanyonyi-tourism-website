@@ -8,7 +8,8 @@ import { WhatsAppFab } from "@/components/layout/whatsapp-fab";
 import { JsonLd } from "@/components/seo/json-ld";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { whatsappDisplay, whatsappHref } from "@/config/contact";
-import { isDemo, isIndexable } from "@/config/demo";
+import { isDemo } from "@/config/demo";
+import { isIndexable } from "@/config/indexing";
 import { siteUrl } from "@/config/site-url";
 import { meta, titleSuffix } from "@/content/meta";
 import { site } from "@/content/site";
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   title: { default: meta["/"].absoluteTitle, template: `%s${titleSuffix}` },
   description: meta["/"].description,
   applicationName: site.operator.name,
-  // Demo deployments are never indexed (AGENTS.md section 0). The X-Robots-Tag header in
+  // Demo copy stays independent of indexing (002 section 2). The matching header in
   // next.config.ts covers non-HTML responses too.
   robots: isIndexable ? { index: true, follow: true } : { index: false, follow: true },
   openGraph: { siteName: site.operator.name, locale: "en_GB", type: "website" },

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { formatWhatsAppNumber, normaliseWhatsAppNumber } from "@/config/contact";
 import { parseDemoMode } from "@/config/demo";
+import { resolveIndexing } from "@/config/indexing";
 import { meta } from "@/content/meta";
 import { buildLlmsTxt } from "@/lib/seo/llms";
 import { pageMetadata } from "@/lib/seo/page-metadata";
@@ -21,6 +22,23 @@ describe("demo mode is fail-safe (002 section 2)", () => {
     ["false", false],
   ])("NEXT_PUBLIC_DEMO_MODE=%s -> demo %s", (value, expected) => {
     expect(parseDemoMode(value)).toBe(expected);
+  });
+});
+
+describe("indexing is independent of demo copy (002 section 2)", () => {
+  it.each([
+    [true, undefined, undefined, false],
+    [true, "", "production", false],
+    [true, "True", "production", false],
+    [true, "true", "production", true],
+    [true, "false", "production", false],
+    [false, undefined, "production", true],
+    [false, "false", "production", false],
+    [true, "true", "preview", false],
+    [false, "true", "preview", false],
+    [false, undefined, "preview", false],
+  ])("demo=%s, override=%s, deployment=%s -> indexable %s", (demo, value, deployment, expected) => {
+    expect(resolveIndexing(demo, value, deployment)).toBe(expected);
   });
 });
 

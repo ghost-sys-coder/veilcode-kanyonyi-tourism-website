@@ -22,7 +22,7 @@ The rules below describe how to build. This section describes what is being buil
 
 **Contact routing:** The WhatsApp button opens a chat with VeilCode Studio's real business number, +256 750 242627, read from `NEXT_PUBLIC_WHATSAPP_NUMBER`, with a prefilled message ("Hi, I'm interested in the Kanyonyi demo site."). There is no separate office phone number. The displayed office address is a clearly labelled sample value.
 
-**Demo mode:** `NEXT_PUBLIC_DEMO_MODE=true` switches on the demo bar, `noindex`, and the demo variants of copy marked "Demo version" in `docs/copy/`. A client build sets it to `false`.
+**Demo mode:** `NEXT_PUBLIC_DEMO_MODE=true` switches on the demo bar and the demo variants of copy marked "Demo version" in `docs/copy/`. A client build sets it to `false`. Demo builds default to `noindex`; Frank explicitly requested production indexing on 5 October 2026. `SITE_INDEXING_ENABLED=true` opts production into indexing independently of demo copy. Vercel previews always remain noindexed.
 
 **Business model:** Enquiry led. Travelers request a tailored quote. The operator confirms availability, buys permits and takes a deposit outside the website (mobile money, bank transfer or card). This build has no online booking, availability engine or payments. Do not design for them beyond keeping the data model open to them later.
 
@@ -63,7 +63,7 @@ Reference: https://github.com/shadcn-ui/ui/blob/main/skills/shadcn/rules/base-vs
 1. Operator specific details (tour prices, inclusions, address, phone, team, testimonials) are sample values. Keep them in `content/` and label the site as a demonstration in the footer.
 2. Public facts that travelers rely on (permit fees, visa rules, park information, seasons, travel times) must still be researched and cited per section 18, even on a demo.
 3. Do not emit Review, AggregateRating, LocalBusiness or Offer structured data for a fictional operator.
-4. Demo deployments must send `noindex` (robots meta and `X-Robots-Tag`) so a fictional operator never appears in search results. SEO architecture is still built and validated in full.
+4. Demo deployments default to `noindex` (robots meta and `X-Robots-Tag`). Exception approved by Frank on 5 October 2026: production may be indexed with `SITE_INDEXING_ENABLED=true`, retaining all fictional-operator notices and schema restrictions. Vercel previews always send `noindex`. SEO architecture is built and validated in full.
 
 ---
 

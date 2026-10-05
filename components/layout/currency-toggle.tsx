@@ -2,8 +2,8 @@
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { site } from "@/content/site";
-import { ui } from "@/content/ui";
+import { site } from "@/lib/content/site";
+import { ui } from "@/lib/content/pages";
 import { useCurrency } from "@/hooks/use-currency";
 
 // Prices are server-rendered in both currencies; this only flips html[data-currency]
@@ -42,7 +42,9 @@ export function CurrencyToggle() {
           {site.currency.labels.ugx}
         </ToggleGroupItem>
       </TooltipTrigger>
-      <TooltipContent className="max-w-60 text-body-s">{site.currency.tooltip}</TooltipContent>
+      <TooltipContent className="max-w-60">
+        <span className="text-body-s">{site.currency.tooltip}</span>
+      </TooltipContent>
     </Tooltip>
   );
 }

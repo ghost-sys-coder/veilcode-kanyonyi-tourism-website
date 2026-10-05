@@ -139,7 +139,7 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 ### Friday 9 October (ship day)
 
 **S9. Verification (morning)**: done 5 October 2026, branch `s9-verification`
-- Review: [PR #10](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/10), stacked on the open acceptance docs PR #9. Implementation `a9de3d1` has a successful Vercel check; its protected preview passes the 22-route crawl and home/form axe at 360px. Merge #9 first and retarget #10 to master
+- Review: merged through [PR #11](https://github.com/ghost-sys-coder/veilcode-kanyonyi-tourism-website/pull/11); acceptance docs #9 is merged and duplicate #10 is closed. Implementation `a9de3d1` has a successful Vercel check; its protected preview passes the 22-route crawl and home/form axe at 360px
 - Playwright: enquiry happy path (email sending stubbed with a test env flag), validation errors, rate limit, every sitemap URL (200, one h1, canonical, noindex), `@axe-core/playwright` on one page of each template, a mobile 360px pass
 - Lighthouse on home, a tour page and plan-your-trip (mobile)
 - Schema Markup Validator on one URL per template, recorded in `docs/research/seo-validation.md`
@@ -151,11 +151,17 @@ Every session ends with `npm run lint`, `npx tsc --noEmit`, `npm test`, a commit
 - Primary UWA scanned notice and the dated official yellow-fever entry notice rechecked; the published copy needs no changes. Older immigration FAQ and unspecified discount expiry are documented in the fact register. Existing G18/G20 future-year gaps remain
 - MemPalace MCP tools unavailable; durable docs carry the session record. No production enquiry or email sent in S9
 
-**S10. Ship (early afternoon, stop by 17:00 EAT)**
+**S10. Ship (early afternoon, stop by 17:00 EAT)**: production release and smoke done 5 October 2026; record branch `s10-launch`. External Google Code checks remain deferred below
 - Production env vars confirmed, production migration applied, production deploy
 - Smoke test on `kanyonyi.veilcode.studio`: one real enquiry, a WhatsApp link on mobile, consent accept and reject, `noindex` present
 - Run the remaining decision 002 Google Rich Results checks from a signed-in browser (the S9 service attempt required login). Keep noindex; per-template Schema Markup Validator already passes
 - Update `docs/decisions/` with anything that changed, and write a short `docs/launch-notes.md` (what shipped, what was cut, known issues)
+- S9 is merged through PR #11, master `c7ffd2e`; PR #9 is merged and duplicate PR #10 is closed. Production deployment is READY for that release. Required settings and existing main migration verified; no migration rerun or local-dev switch to main
+- Production: all 22 routes return 200 with one H1, self canonical and both noindex signals. Home/form have zero axe violations and no overflow at 360px. Mobile WhatsApp number/message and real analytics accept/reject/withdrawal pass
+- One synthetic production enquiry KX-1001 stores two travellers, November 2026 and USD 3,300 on main; reference/estimate match screen and both email bodies. Resend confirms both support@ and frank@ deliveries. Main now has one row; no duplicate submission or email retry was made
+- Typegen/typecheck/lint and 253 unit tests pass. Full browser run: 145 passed, 2 skipped, one mobile multi-state axe timeout. The sole timed-out case passed unchanged with one worker; all 146 cases have passed. Detailed evidence is in `docs/research/s10-launch-verification.md`
+- Google Code mode was tried with actual home JSON-LD; it also returned "Log in and try again" without a result. Current Google help limits noindexed URL tests, so 002 is corrected. Per-template Google Code checks remain an external manual follow-up in Frank's functioning browser; no Google pass is claimed. Search Console setup does not change noindex; 12 Schema Markup Validator templates already pass
+- `docs/launch-notes.md` records shipped scope, cuts and follow-ups. MemPalace MCP tools unavailable; durable docs carry the session record
 
 ## What gets cut first if we fall behind
 
@@ -170,7 +176,17 @@ Cut from the top. Each line names what replaces the cut item, so the page still 
 7. **Full Playwright suite** → keep only the enquiry happy path and the sitemap crawl. Run axe on home and one tour page
 8. **Traveller confirmation email HTML** → plain-text email only (the operator notification is already plain text)
 
-**Never cut:** enquiry storage and both emails, the WhatsApp links, `noindex` on the demo, all six tour pages, fact stamps on every page that shows permit or entry facts, demo labelling, keyboard and screen reader basics on the form and nav, mobile layout.
+**Never cut:** enquiry storage and both emails, the WhatsApp links, noindex on previews and demos without the explicit production exception, all six tour pages, fact stamps on every page that shows permit or entry facts, demo labelling, keyboard and screen reader basics on the form and nav, mobile layout.
+
+## Post-launch corrections (5 October 2026)
+
+Frank requested production indexing and two shell fixes. Implementation plan:
+
+- Separate indexing from demo copy with server-only `SITE_INDEXING_ENABLED`; enable only Production. Preview builds always remain noindexed. Preserve fictional labels and all schema exclusions. Update AGENTS.md and decision 002 for the explicitly changed brief.
+- Preserve the approved currency explanation and prevent the custom text-size class from removing the tooltip's foreground colour during class merging. Verify hover, keyboard focus, both currencies and open-tooltip contrast.
+- Put the WhatsApp fallback label above a number/copy row, keep the complete number on one line and use the installed Button for copying. Verify at 320px/360px, clipboard success/failure, keyboard dismissal and open-popover axe.
+- Run the baseline before application edits, then typegen/typecheck/lint/unit and focused browser checks. Frank requested a faster turnaround during the baseline: it was stopped after 90 passes and one expected skip, with no failures. Deploy the reviewed changes and verify all 22 public routes permit indexing while retaining demo notices. Do not create another enquiry or send test emails.
+- Local verification: fresh production build, typegen/typecheck/lint and all 263 unit tests pass. All 10 focused browser checks pass on mobile/desktop, including tooltip hover/focus/text contrast, currency persistence, 320px/360px WhatsApp wrapping, copy success/failure, Escape and open-overlay axe. The initial new tooltip tests used a nonexistent `role=tooltip` in Base UI 1.8; corrected to the installed component's `data-slot`, with no weakened text/style/axe assertions. The rerun used the exact fresh build, avoiding a redundant rebuild. Full post-change browser-suite completion is not claimed.
 
 ## Risks
 

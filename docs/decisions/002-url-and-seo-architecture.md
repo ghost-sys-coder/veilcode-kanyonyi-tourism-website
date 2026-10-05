@@ -8,7 +8,7 @@
 The copy deck fixes the URL map (00-README.md) and every title and description (11-emails-and-meta.md). The brief requires:
 
 - canonicals, sitemap, robots, `llms.txt`, Open Graph and structured data built from `NEXT_PUBLIC_SITE_URL`, with no hardcoded hostname
-- `noindex` on demo deployments, sent in both the robots meta tag and an `X-Robots-Tag` header
+- `noindex` by default on demo deployments, with Frank's explicit production indexing exception of 5 October 2026 (section 2)
 - no Review, AggregateRating, LocalBusiness or Offer structured data for a fictional operator
 
 No SEO data tool is connected in this session (Ahrefs, DataForSEO and others need authorisation), so this document makes no search volume or difficulty claims. Keyword targeting follows the search intent already reflected in the approved titles.
@@ -48,10 +48,18 @@ export const siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://local
 
 // config/demo.ts
 // Fail-safe: only the exact string "false" turns demo mode off. An unset or mistyped
-// value means demo mode, and demo mode means noindex.
+// value means demo mode. Copy selection is independent of the indexing override.
 export const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
-export const isIndexable = !isDemo;
+
+// config/indexing.ts
+// Vercel previews always remain noindexed. Exact true/false values override the
+// demo default elsewhere; missing or mistyped values retain the original default.
+export const isIndexable = resolveIndexing(
+  isDemo, process.env.SITE_INDEXING_ENABLED, process.env.VERCEL_ENV,
+);
 ```
+
+**Current production decision, 5 October 2026:** Frank explicitly requested indexing on. Set server-only `SITE_INDEXING_ENABLED=true` for Vercel Production and rebuild. Keep `NEXT_PUBLIC_DEMO_MODE=true`: notices, sample policy/team/price labels, demo emails and fictional schema restrictions still apply. Do not enable indexing on previews. Removing noindex permits indexing; it does not prove Google has indexed the pages. Local tests retain the noindex default; an actual production crawl verifies the override's metadata and response headers.
 
 - The root layout sets `metadataBase: siteUrl`. Every other URL field (canonical, OG url, OG image) is a relative path.
 - A missing `NEXT_PUBLIC_SITE_URL` fails the production build (`if (process.env.VERCEL_ENV === "production" && !process.env.NEXT_PUBLIC_SITE_URL) throw`). This stops a client site shipping canonicals that point at localhost.
@@ -165,7 +173,7 @@ FAQ rich results are now limited to authoritative government and health sites, s
 
 - Playwright: every sitemap URL returns 200, has exactly one `<h1>`, a canonical equal to its own clean URL, `noindex` in both the meta tag and the header on the demo, and JSON-LD that parses
 - Unit test: forbidden schema types are absent (see section 9)
-- Manual: Schema Markup Validator and Rich Results Test on one URL per page type (the tests can fetch a noindexed page), recorded in `docs/research/seo-validation.md`. Run `/seo-audit` or `seo-technical` if available, otherwise do the same checks by hand
+- Manual: Schema Markup Validator and Rich Results Test on one representative page per template, recorded in `docs/research/seo-validation.md`. Keep demo noindex. Google's current help says a noindexed page cannot use its URL test; use the actual page markup in Code mode if available and label that result as a code test, not a crawl/indexing check. Run `/seo-audit` or `seo-technical` if available, otherwise do the same checks by hand
 
 ## Implementation notes (S5, 4 October 2026)
 
@@ -192,6 +200,12 @@ FAQ rich results are now limited to authoritative government and health sites, s
 - The Google Rich Results Test attempt returned "Log in and try again" without a result. The additional per-template Google checks in section 12 remain a signed-in S10 task for Frank. No pass or rich-result eligibility is inferred from the Schema.org results.
 - Lighthouse's scored SEO failure is the intentional demo noindex. Indexing protection remains mandatory. Evidence and limitations are in `docs/research/seo-validation.md` and `docs/research/s9-verification.md`.
 
+### Launch verification (S10, 5 October 2026)
+
+- The public production release passes the 22-page crawl and the corrected logo/home/form accessibility checks. Search Console setup does not change the demo noindex policy; no indexing request was submitted.
+- Current Google help contradicts the earlier section 12 assumption about noindexed URL tests. Section 12 now permits explicitly labelled Code-mode checks using actual page markup. This validates code only and does not establish crawlability or rich-result eligibility.
+- Actual home JSON-LD was submitted in Code mode; Google again returned "Log in and try again" without a result. Per-template Google checks remain an external manual follow-up. The Schema Markup Validator's 12 successful fetch/render checks stand independently. See `docs/research/s10-launch-verification.md`.
+
 ### Homepage implementation (S7, 4 October 2026)
 
 - The trip finder uses `parseFilters`/`toQueryString` and navigates to the existing `/tours` query contract. A submit sends one `tour_search` event. Month links use the corresponding date in the rolling twelve-month list; filtered pages retain the `/tours` canonical.
@@ -200,5 +214,5 @@ FAQ rich results are now limited to authoritative government and health sites, s
 
 
 - Moving to a client domain means changing `NEXT_PUBLIC_SITE_URL` and setting `NEXT_PUBLIC_DEMO_MODE=false`. No code changes. `NEXT_PUBLIC_*` values are inlined at build time, so either change needs a redeploy.
-- The noindex default is fail-safe. If someone forgets an env var, the site stays out of search rather than leaking into it.
+- The demo noindex default is fail-safe. Only exact `SITE_INDEXING_ENABLED=true` opts it into indexing outside Vercel Preview; exact `false` keeps even a live build noindexed. Missing/mistyped values retain `!isDemo`. Vercel Preview always overrides to noindex.
 - Tours can't win price rich results on the demo. That is by design.

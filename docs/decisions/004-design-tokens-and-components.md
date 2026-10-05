@@ -326,3 +326,8 @@ AGENTS.md section 0 lists the Base UI differences. These are the places they app
 - The header/footer logo link derives its accessible name from the visible approved wordmark and subline. Its previous overriding label omitted "Uganda", failing WCAG 2.5.3 (Label in Name) in Lighthouse despite a 100 accessibility score. Removing that override changes no visible copy or styling. A Playwright regression checks both landmarks.
 - All template axe scans now include `wcag21a` as well as `wcag2a`, `wcag2aa`, `wcag21aa` and `wcag22aa`; AA conformance includes the A rules.
 - The trip-finder test waits for the new month popup's 13 options before reading them. Base UI retains the previous experience popup during its exit animation; the old immediate count occasionally included both popups. The component and animation are unchanged.
+
+### Post-launch shell corrections (5 October 2026)
+
+- The currency tooltip's `text-body-s` override was interpreted as a colour by `cn` 0.4, removing `text-background` and leaving dark text on the dark popup. Put the custom size on an inner span so the existing popup colour survives. Approved wording and shadcn Tooltip behaviour remain intact; no upstream component or token changed.
+- WhatsApp fallback label sits above a wrapping number/copy row. The number itself has `whitespace-nowrap`, so narrower screens can move the copy action to the next row without splitting the phone number. Copy uses the installed shadcn Button and retains success/failure feedback. No copy was rewritten.

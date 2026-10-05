@@ -67,3 +67,11 @@ Keep the required demo noindex. A valid Schema.org result does not guarantee Goo
 Final production-build tests cover all 22 sitemap URLs, title/description and Open Graph host/URL, both noindex signals, one H1 and self canonicals. All internal links and fragments resolve and every sitemap page fits at 360px. All template axe scans now include WCAG 2.1 A rules as well as the existing AA tags. The logo Label in Name fix is verified in both shared landmarks.
 
 Typegen, typecheck, lint and production build pass; 253 unit tests and 146 Playwright tests pass, with two expected skips. Mobile Lighthouse scores, its intentional demo-indexing penalty, primary fact rechecks and triaged performance follow-ups are recorded in [S9 verification](s9-verification.md).
+
+## S10 production and Google retry (5 October 2026)
+
+S9 is merged via PR #11; the public production release is `c7ffd2e`. Its 22-page crawl and home/form axe checks at 360px pass, including both corrected logo names. See [S10 verification](s10-launch-verification.md) for the final browser-run timeout/retest, consent and enquiry delivery evidence.
+
+Search Console ownership was not needed for the public tool. Current [Google help](https://support.google.com/webmasters/answer/7445569) says noindexed pages cannot use its URL test and supports arbitrary Code snippets. Decision 002's earlier contrary assumption is corrected; demo noindex stays enabled.
+
+The actual public homepage JSON-LD was submitted in Code mode with the smartphone option. Google returned "Something went wrong / Log in and try again" again, without validation results. Screenshot/text are retained as `playwright-report/s10/google-code-result.{png,txt}`. The connected browser did not initialize, so no access to Frank's signed-in Google session is claimed. Per-template Google Code checks remain an external manual follow-up; no Google pass is reported. The 12 Schema Markup Validator results above remain valid.
