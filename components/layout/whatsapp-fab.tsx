@@ -5,7 +5,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverDescription, PopoverTitle, PopoverTrigger } from "@/components/ui/popover";
 import { WhatsAppIcon } from "@/components/layout/whatsapp-icon";
 import { WhatsAppLink } from "@/components/layout/whatsapp-link";
-import { ui } from "@/content/ui";
+import { ui } from "@/lib/content/pages";
 import { cn } from "@/lib/utils";
 import { fill } from "@/lib/content/format";
 
@@ -49,18 +49,14 @@ export function WhatsAppFab({ href, displayNumber }: { href: string; displayNumb
             <WhatsAppIcon className="size-5" />
             {ui.whatsappPopover.openButton}
           </WhatsAppLink>
-          <div className="flex items-center justify-between gap-2 rounded-sm bg-secondary px-3 py-2 text-body-s">
-            <span>
-              {fill(ui.whatsappPopover.fallback, { number: "" })}
-              <span className="font-mono select-all">{displayNumber}</span>
-            </span>
-            <button
-              type="button"
-              onClick={copyNumber}
-              className="min-h-8 shrink-0 rounded-sm px-1 font-semibold text-primary underline-offset-4 hover:underline"
-            >
-              {ui.whatsappPopover.copyNumber}
-            </button>
+          <div className="flex flex-col gap-1 rounded-sm bg-secondary px-3 py-2 text-body-s">
+            <span>{fill(ui.whatsappPopover.fallback, { number: "" })}</span>
+            <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+              <span className="font-mono whitespace-nowrap select-all">{displayNumber}</span>
+              <Button type="button" variant="link" size="sm" onClick={copyNumber} className="px-0">
+                {ui.whatsappPopover.copyNumber}
+              </Button>
+            </div>
           </div>
           <p role="status" aria-live="polite" className="min-h-5 text-body-s">
             {copy === "copied" ? <span className="text-success">{ui.whatsappPopover.copied}</span> : null}

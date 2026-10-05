@@ -176,7 +176,17 @@ Cut from the top. Each line names what replaces the cut item, so the page still 
 7. **Full Playwright suite** → keep only the enquiry happy path and the sitemap crawl. Run axe on home and one tour page
 8. **Traveller confirmation email HTML** → plain-text email only (the operator notification is already plain text)
 
-**Never cut:** enquiry storage and both emails, the WhatsApp links, `noindex` on the demo, all six tour pages, fact stamps on every page that shows permit or entry facts, demo labelling, keyboard and screen reader basics on the form and nav, mobile layout.
+**Never cut:** enquiry storage and both emails, the WhatsApp links, noindex on previews and demos without the explicit production exception, all six tour pages, fact stamps on every page that shows permit or entry facts, demo labelling, keyboard and screen reader basics on the form and nav, mobile layout.
+
+## Post-launch corrections (5 October 2026)
+
+Frank requested production indexing and two shell fixes. Implementation plan:
+
+- Separate indexing from demo copy with server-only `SITE_INDEXING_ENABLED`; enable only Production. Preview builds always remain noindexed. Preserve fictional labels and all schema exclusions. Update AGENTS.md and decision 002 for the explicitly changed brief.
+- Preserve the approved currency explanation and prevent the custom text-size class from removing the tooltip's foreground colour during class merging. Verify hover, keyboard focus, both currencies and open-tooltip contrast.
+- Put the WhatsApp fallback label above a number/copy row, keep the complete number on one line and use the installed Button for copying. Verify at 320px/360px, clipboard success/failure, keyboard dismissal and open-popover axe.
+- Run the baseline before application edits, then typegen/typecheck/lint/unit and focused browser checks. Frank requested a faster turnaround during the baseline: it was stopped after 90 passes and one expected skip, with no failures. Deploy the reviewed changes and verify all 22 public routes permit indexing while retaining demo notices. Do not create another enquiry or send test emails.
+- Local verification: fresh production build, typegen/typecheck/lint and all 263 unit tests pass. All 10 focused browser checks pass on mobile/desktop, including tooltip hover/focus/text contrast, currency persistence, 320px/360px WhatsApp wrapping, copy success/failure, Escape and open-overlay axe. The initial new tooltip tests used a nonexistent `role=tooltip` in Base UI 1.8; corrected to the installed component's `data-slot`, with no weakened text/style/axe assertions. The rerun used the exact fresh build, avoiding a redundant rebuild. Full post-change browser-suite completion is not claimed.
 
 ## Risks
 

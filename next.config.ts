@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { isIndexable } from "./config/demo";
+import { isIndexable } from "./config/indexing";
 
 // Response headers for every route (docs/decisions/002 section 7).
 // X-Robots-Tag also covers llms.txt, the sitemap and images, which a meta tag cannot.

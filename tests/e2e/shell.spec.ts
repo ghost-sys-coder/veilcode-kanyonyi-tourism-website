@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { site } from "@/lib/content/site";
 
 // S2 shell: header, footer, demo notice, consent, WhatsApp, 404, and the SEO files.
 
@@ -70,6 +71,69 @@ test.describe("site shell", () => {
     await expect(page.getByText("Talk to a trip planner")).toBeVisible();
     const open = page.getByRole("link", { name: /Open WhatsApp/ });
     await expect(open).toHaveAttribute("href", /^https:\/\/wa\.me\/\d+\?text=Hi%2C%20I'm%20interested%20in%20the%20Kanyonyi%20demo%20site\.$/);
+  });
+
+  test("currency tooltip has readable approved text on hover and keyboard focus", async ({ page, isMobile }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Reject" }).click();
+    if (isMobile) await page.getByRole("button", { name: "Open menu" }).click();
+    const usd = page.getByRole("button", { name: "USD", exact: true });
+    const ugx = page.getByRole("button", { name: "UGX", exact: true });
+    // Base UI 1.8 treats tooltips as sighted hints, without assigning role=tooltip.
+    const tooltip = page.locator('[data-slot="tooltip-content"]');
+    if (!isMobile) {
+      await usd.hover();
+      await expect(tooltip).toHaveText(site.currency.tooltip);
+      await page.mouse.move(0, 0);
+      await expect(tooltip).toBeHidden();
+    }
+    await page.keyboard.press("Tab");
+    await ugx.focus();
+    await expect(tooltip).toHaveText(site.currency.tooltip);
+    await expect(tooltip.locator("span")).toHaveCSS("color", "rgb(242, 244, 239)");
+    await expect(tooltip.locator("span")).toHaveCSS("font-size", "14px");
+    const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+    expect(results.violations.map((v) => v.id)).toEqual([]);
+    await page.keyboard.press("Escape");
+    await expect(tooltip).toBeHidden();
+    await ugx.click();
+    await expect(page.locator("html")).toHaveAttribute("data-currency", "ugx");
+  });
+
+  test("WhatsApp number stays on one line at 320px and 360px with working copy feedback", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("/");
+    await page.getByRole("button", { name: "Reject" }).click();
+    for (const width of [320, 360]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.getByRole("button", { name: "Chat with us on WhatsApp" }).click();
+      const popup = page.locator('[data-slot="popover-content"]');
+      const number = popup.locator("span.select-all");
+      await expect(number).toBeVisible();
+      expect(await number.evaluate((element) => {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        return range.getClientRects().length;
+      })).toBe(1);
+      expect(await popup.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.left >= 0 && rect.right <= window.innerWidth && element.scrollWidth <= element.clientWidth;
+      })).toBe(true);
+      await popup.getByRole("button", { name: "Copy number" }).click();
+      await expect(popup.getByText("Copied", { exact: true })).toBeVisible();
+      expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(await number.textContent());
+      if (width === 360) {
+        const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+        expect(results.violations.map((v) => v.id)).toEqual([]);
+        await page.evaluate(() => {
+          navigator.clipboard.writeText = async () => { throw new Error("Clipboard unavailable"); };
+        });
+        await popup.getByRole("button", { name: "Copy number" }).click();
+        await expect(popup.getByText("Select the number to copy it", { exact: true })).toBeVisible();
+      }
+      await page.keyboard.press("Escape");
+      await expect(popup).toBeHidden();
+    }
   });
 
   test("currency choice persists across pages", async ({ page, isMobile }) => {

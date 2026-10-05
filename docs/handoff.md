@@ -3,6 +3,8 @@
 **Updated:** Monday 5 October 2026, through S10 production launch verification, for the next coding agent.
 **Deadline:** Friday 9 October 2026, hard stop (AGENTS.md section 0).
 
+**Post-launch request, 5 October 2026:** Frank explicitly requested production indexing. `SITE_INDEXING_ENABLED=true` in Vercel Production now controls indexing independently of `NEXT_PUBLIC_DEMO_MODE=true`. Demo copy/notices and fictional schema exclusions remain; Vercel previews always remain noindexed. This supersedes the historical mandatory-production-noindex statements below. Currency tooltip size now sits inside its popup to preserve light text; the WhatsApp fallback has an unbroken number with a separate copy row. See decision 002 and 004 post-launch notes.
+
 **S6 update:** 4 October 2026, Codex. Merged into `master` as PR #6. **S7 update:** full homepage completed on `s7-home`, merged in PR #7. MemPalace MCP tools were not available, so this document and the decision records carry the session notes.
 
 Read in this order before writing code:

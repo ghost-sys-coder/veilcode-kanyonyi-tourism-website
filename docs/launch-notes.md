@@ -8,7 +8,7 @@
 - Licensed local photography, mobile layouts, dual USD/UGX display, sourced permit tables and dated fact notices. All marketing copy comes from the approved content files.
 - Enquiries stored in Neon main by production, with a reference, authoritative estimate, validation, rate limit and spam handling. Resend sends an operator notification and branded traveller confirmation. Local development and previews use dev.
 - Mobile WhatsApp routing to VeilCode Studio, GA4 behind basic analytics consent, canonicals, Open Graph, sitemap, robots, llms.txt and allowed JSON-LD.
-- Clear fictional-operator/demo notices and noindex in metadata and response headers. Search Console setup does not change that indexing policy.
+- Clear fictional-operator/demo notices. At launch, metadata and headers sent noindex. Frank's later explicit request of 5 October enables production indexing separately through `SITE_INDEXING_ENABLED=true`; previews keep noindex. Sample copy and schema exclusions remain.
 
 ## Release
 
@@ -32,7 +32,7 @@ All 12 Schema Markup Validator templates pass. Google's URL test is constrained 
 
 - G7/G13/G14: map-caption fallback, March's season legend label and Jinja rafting-photo replacement. G9/G15/G17: intentionally absent/reused closing copy and the shared fact stamp.
 - G18/G20/G21: approved future-year notes/rate wording and more specific form-bound errors. Conservative future-year fallbacks remain in use; no unconfirmed permit discount is promised for 2027.
-- Lighthouse mobile performance is 84/78/85 for home/tour/form. JavaScript blocking time and the tour's 0.094 lab CLS are recorded follow-ups. The SEO score is penalised by required demo noindex; keep it.
+- Lighthouse mobile performance is 84/78/85 for home/tour/form. JavaScript blocking time and the tour's 0.094 lab CLS are recorded follow-ups. These historical SEO scores included the launch noindex penalty; production indexing was subsequently requested by Frank.
 - Preview/local GA ID remains configured (F18); test traffic should be filtered. Production consent acceptance creates real analytics traffic. No advertising signals are granted.
 - Schedule demo enquiry deletion before October 2027. `db:purge` defaults to dry run. Monitor pending/failed email rows and Resend delivery events; application `sent` means API acceptance. Admin monitoring/delivery webhooks remain future work.
 
